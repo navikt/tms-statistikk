@@ -2,7 +2,6 @@ package no.nav.tms.statistikk
 
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidApplication.RapidApplicationConfig.Companion.fromEnv
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -33,12 +32,3 @@ private fun startRapid(
         })
     }.start()
 }
-
-val JsonMessage.ident: String
-    get() {
-        return get("ident").asText()
-    }
-val JsonMessage.microfrontendId: String
-    get() {
-        return get("microfrontend_id").asText()
-    }

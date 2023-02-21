@@ -18,8 +18,6 @@ class LocalPostgresDatabase private constructor() : Database {
         }
 
         fun cleanDb(): LocalPostgresDatabase {
-            instance.update { queryOf("delete from changelog") }
-            instance.update { queryOf("delete from person") }
             return instance
         }
     }
@@ -49,20 +47,7 @@ class LocalPostgresDatabase private constructor() : Database {
             .load()
             .migrate()
     }
-
-    fun getChangelog(fnr: String) = list {
-        queryOf("SELECT * FROM changelog where ident=:fnr", mapOf("fnr" to fnr))
-            .map {
-                ChangelogEntry(
-                    originalData = it.stringOrNull("original_data"),
-                    newData = it.string("new_data"),
-                    date = it.localDateTime("timestamp")
-                )
-            }.asList
-    }
 }
-
-data class ChangelogEntry(val originalData: String?, val newData: String, val date: LocalDateTime)
 
 internal inline fun <T> T.assert(block: T.() -> Unit): T =
     apply {

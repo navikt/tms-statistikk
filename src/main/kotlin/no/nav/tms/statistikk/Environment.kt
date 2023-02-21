@@ -4,42 +4,34 @@ import no.nav.personbruker.dittnav.common.util.config.StringEnvVar.getEnvVar
 
 data class Environment(
     val groupId: String = getEnvVar("GROUP_ID"),
-    val dbHost: String = getEnvVar("DB_HOST"),
-    val dbPort: String = getEnvVar("DB_PORT"),
-    val dbName: String = getEnvVar("DB_DATABASE"),
+    val varselTopic: String = getEnvVar("VARSEL_TOPIC"),
+    val dbUrl: String = getDbUrl(),
     val dbUser: String = getEnvVar("DB_USERNAME"),
     val dbPassword: String = getEnvVar("DB_PASSWORD"),
-    val dbUrl: String = getDbUrl(dbHost, dbPort, dbName),
-    val clusterName: String = getEnvVar("NAIS_CLUSTER_NAME"),
-    val namespace: String = getEnvVar("NAIS_NAMESPACE"),
-    val aivenBrokers: String = getEnvVar("KAFKA_BROKERS"),
-    val aivenSchemaRegistry: String = getEnvVar("KAFKA_SCHEMA_REGISTRY"),
-    val securityVars: SecurityVars = SecurityVars(),
-    val rapidTopic: String = getEnvVar("RAPID_TOPIC"),
+    val kafkaBrokers: String = getEnvVar("KAFKA_BROKERS"),
+    val kafkaTruststorePath: String = getEnvVar("KAFKA_TRUSTSTORE_PATH"),
+    val kafkaKeystorePath: String = getEnvVar("KAFKA_KEYSTORE_PATH"),
+    val kafkaCredstorePassword: String = getEnvVar("KAFKA_CREDSTORE_PASSWORD"),
+    val kafkaSchemaRegistryUser: String = getEnvVar("KAFKA_SCHEMA_REGISTRY_USER"),
+    val kafkaSchemaRegistryPassword: String = getEnvVar("KAFKA_SCHEMA_REGISTRY_PASSWORD"),
     ) {
     fun rapidConfig(): Map<String, String> = mapOf(
-        "KAFKA_BROKERS" to aivenBrokers,
+        "KAFKA_BROKERS" to kafkaBrokers,
         "KAFKA_CONSUMER_GROUP_ID" to groupId,
-        "KAFKA_RAPID_TOPIC" to rapidTopic,
-        "KAFKA_KEYSTORE_PATH" to securityVars.aivenKeystorePath,
-        "KAFKA_CREDSTORE_PASSWORD" to securityVars.aivenCredstorePassword,
-        "KAFKA_TRUSTSTORE_PATH" to securityVars.aivenTruststorePath,
+        "KAFKA_RAPID_TOPIC" to varselTopic,
+        "KAFKA_KEYSTORE_PATH" to kafkaKeystorePath,
+        "KAFKA_CREDSTORE_PASSWORD" to kafkaCredstorePassword,
+        "KAFKA_TRUSTSTORE_PATH" to kafkaTruststorePath,
         "KAFKA_RESET_POLICY" to "earliest",
-        "HTTP_PORT" to "8080",
-        "NAIS_NAMESPACE" to namespace,
-        "NAIS_CLUSTER_NAME" to  clusterName
+        "HTTP_PORT" to "8080"
     )
 }
 
-data class SecurityVars(
-    val aivenTruststorePath: String = getEnvVar("KAFKA_TRUSTSTORE_PATH"),
-    val aivenKeystorePath: String = getEnvVar("KAFKA_KEYSTORE_PATH"),
-    val aivenCredstorePassword: String = getEnvVar("KAFKA_CREDSTORE_PASSWORD"),
-    val aivenSchemaRegistryUser: String = getEnvVar("KAFKA_SCHEMA_REGISTRY_USER"),
-    val aivenSchemaRegistryPassword: String = getEnvVar("KAFKA_SCHEMA_REGISTRY_PASSWORD")
-)
-
-fun getDbUrl(host: String, port: String, name: String): String {
+fun getDbUrl(
+    host: String = getEnvVar("DB_HOST"),
+    port: String = getEnvVar("DB_PORT"),
+    name: String = getEnvVar("DB_DATABASE")
+): String {
     return if (host.endsWith(":$port")) {
         "jdbc:postgresql://${host}/$name"
     } else {
