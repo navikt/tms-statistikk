@@ -56,7 +56,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("no.nav.tms.mikrofrontend.selector.ApplicationKt")
+    mainClass.set("no.nav.tms.statistikk.ApplicationKt")
 }
 
 tasks {

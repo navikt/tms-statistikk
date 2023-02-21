@@ -7,7 +7,7 @@ import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 
-class WIPSink(
+class VarselPerDagSink(
     rapidsConnection: RapidsConnection,
 ) :
     River.PacketListener {
@@ -16,13 +16,14 @@ class WIPSink(
 
     init {
         River(rapidsConnection).apply {
-            validate { it.demandValue("@action", "enable") }
-            validate { it.requireKey("ident", "microfrontend_id") }
+            validate { it.demandValue("@event_name", "aktivert") }
+            validate { it.requireKey("fodselsnummer", "varselType", "forstBehandlet", "eksternVarsling") }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        {}
+        val type = packet["varselType"].textValue()
+        log.info("Teller varsel for $type")
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
