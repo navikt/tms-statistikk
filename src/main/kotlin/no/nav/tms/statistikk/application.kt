@@ -19,7 +19,7 @@ private fun startRapid(
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
         statistikkApi()
     }.build().apply {
-
+        VarselPerDagSink(this)
     }.apply {
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
