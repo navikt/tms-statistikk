@@ -6,13 +6,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
-import io.micrometer.prometheus.PrometheusMeterRegistry
 import no.nav.tms.token.support.authentication.installer.installAuthenticators
-import no.nav.tms.statistikk.metrics.metrics
 import java.text.DateFormat
 
 internal fun Application.statistikkApi(
-    prometheusMeterRegistry: PrometheusMeterRegistry,
     installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
     installAuthenticatorsFunction()
@@ -25,7 +22,6 @@ internal fun Application.statistikkApi(
     }
 
     routing {
-        metrics(prometheusMeterRegistry)
         authenticate {}
     }
 }
