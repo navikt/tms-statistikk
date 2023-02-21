@@ -14,7 +14,7 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
     route("/innlogging") {
         post {
             persitance.updateLoginCount(call.receive<InnloggingRequestBody>().ident)
-            call.respond(HttpStatusCode.Created)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 

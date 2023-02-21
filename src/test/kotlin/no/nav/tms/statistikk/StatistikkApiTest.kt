@@ -5,21 +5,21 @@ import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.mockk.mockk
+import kotliquery.queryOf
 import no.nav.tms.statistikk.api.StatistikkPersistence
-import no.nav.tms.statistikk.database.Database
 import org.junit.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class StatistikkApiTest {
 
-    val persistanceInspector = StatistikkPersistence(LocalPostgresDatabase.cleanDb())
+    private val db = LocalPostgresDatabase.cleanDb()
+    private val statsPersistence = StatistikkPersistence(db)
 
     @Test
     fun `innlogiingstatistikk`() = testApplication {
         application {
-            statistikkApi(persistanceInspector)
+            statistikkApi(statsPersistence)
         }
 
         client.post("/innlogging") {
@@ -27,19 +27,39 @@ internal class StatistikkApiTest {
             headers {
                 contentType(ContentType.Application.Json)
             }
-        }.assert {
-            status.shouldBe(HttpStatusCode.Created)
-        }
+        }.status shouldBe(HttpStatusCode.NoContent)
+
+        client.post("/innlogging") {
+            setBody("""{"ident":"123615426480"}""")
+            headers {
+                contentType(ContentType.Application.Json)
+            }
+        }.status shouldBe(HttpStatusCode.NoContent)
+
+        client.post("/innlogging") {
+            setBody("""{"ident":"123615426489"}""")
+            headers {
+                contentType(ContentType.Application.Json)
+            }
+        }.status shouldBe(HttpStatusCode.NoContent)
+
+        db.query {
+            queryOf("SELECT COUNT(ident) as total FROM innlogging_per_dag")
+                .map {
+                    it.int("total")
+                }.asSingle
+        } shouldBe 2
     }
 
     @Test
     fun `csv nedlasting`() = testApplication {
         application {
-            statistikkApi(persistanceInspector)
+            statistikkApi(statsPersistence)
         }
 
         client.get("/hent").assert {
             status.shouldBe(HttpStatusCode.OK)
+            headers[""]
         }
     }
 }

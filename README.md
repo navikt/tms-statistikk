@@ -35,7 +35,7 @@ paths:
       produces: 
         - text/html
       responses: 
-        '200':
+        '204':
           description: OK
 ```
 
