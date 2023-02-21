@@ -59,7 +59,7 @@ internal class StatistikkApiTest {
 
         client.get("/hent").assert {
             status.shouldBe(HttpStatusCode.OK)
-            headers[""]
+            headers["Content-Type"] shouldBe "text/html; charset=UTF-8"
         }
     }
 }

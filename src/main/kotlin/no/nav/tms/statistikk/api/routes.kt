@@ -2,9 +2,15 @@ package no.nav.tms.statistikk.api
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.html.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.html.body
+import kotlinx.html.button
+import kotlinx.html.h1
+import kotlinx.html.head
+import kotlinx.html.title
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import java.time.LocalDate
@@ -20,8 +26,15 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
 
     route("/hent") {
         get {
-            persitance.getCSV()
-            call.respond(HttpStatusCode.OK)
+            call.respondHtml(HttpStatusCode.OK) {
+                head {
+                    title("Min side stats")
+                }
+                body {
+                    h1("Tadda!")
+                }
+            }
+
         }
     }
 }
