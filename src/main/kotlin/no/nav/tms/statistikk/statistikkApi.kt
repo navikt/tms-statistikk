@@ -22,3 +22,5 @@ internal fun Application.statistikkApi(
         statistikk(persistence)
     }
 }
+
+

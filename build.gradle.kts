@@ -53,6 +53,8 @@ dependencies {
     testImplementation(TmsKtorTokenSupport.authenticationInstallerMock)
     testImplementation(TmsKtorTokenSupport.azureValidationMock)
     testImplementation(Mockk.mockk)
+    testImplementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.8.0")
+
 
 }
 
