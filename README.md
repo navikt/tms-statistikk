@@ -31,7 +31,7 @@ paths:
           description: Successful response
   /hent:
     get: 
-      description: HTML isde for å laste ned statistikk i CSV format
+      description: HTML side for å laste ned statistikk i CSV format
       produces: 
         - text/html
       responses: 

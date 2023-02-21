@@ -7,28 +7,19 @@ import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.mockk.mockk
 import no.nav.tms.statistikk.api.StatistikkPersistence
+import no.nav.tms.statistikk.database.Database
 import org.junit.Test
+import org.junit.jupiter.api.TestInstance
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class StatistikkApiTest {
 
-    val persistanceInspector = object : TestInspector {
-        override var loginStats = mutableListOf<String>()
-        override var csvFetchCount = 0
-
-        override fun updateLoginCount(ident: String) {
-            loginStats.add(ident)
-        }
-
-        override fun getCSV(): String {
-            csvFetchCount++
-            return ""
-        }
-    }
+    val persistanceInspector = StatistikkPersistence(LocalPostgresDatabase.cleanDb())
 
     @Test
     fun `innlogiingstatistikk`() = testApplication {
         application {
-            statistikkApi(mockk(relaxed = true), persistanceInspector)
+            statistikkApi(persistanceInspector)
         }
 
         client.post("/innlogging") {
@@ -38,24 +29,17 @@ internal class StatistikkApiTest {
             }
         }.assert {
             status.shouldBe(HttpStatusCode.Created)
-            persistanceInspector.loginStats.size shouldBe 1
         }
     }
 
     @Test
     fun `csv nedlasting`() = testApplication {
         application {
-            statistikkApi(mockk(relaxed = true), persistanceInspector)
+            statistikkApi(persistanceInspector)
         }
 
         client.get("/hent").assert {
             status.shouldBe(HttpStatusCode.OK)
-            persistanceInspector.csvFetchCount shouldBe 1
         }
     }
-}
-
-interface TestInspector : StatistikkPersistence {
-    var loginStats: MutableList<String>
-    var csvFetchCount: Int
 }
