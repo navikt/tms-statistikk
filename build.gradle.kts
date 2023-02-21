@@ -51,6 +51,8 @@ dependencies {
     testImplementation(Ktor2.Test.serverTestHost)
     testImplementation(TmsKtorTokenSupport.authenticationInstallerMock)
     testImplementation(TmsKtorTokenSupport.azureValidationMock)
+    testImplementation(Mockk.mockk)
+
 }
 
 application {

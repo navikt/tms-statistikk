@@ -6,6 +6,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidApplication.RapidApplicationConfig.Companion.fromEnv
 import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tms.statistikk.api.StatistikkPersistence
 import no.nav.tms.statistikk.database.Flyway
 
 fun main() {
@@ -22,7 +23,7 @@ private fun startRapid(
     prometheusMeterRegistry: PrometheusMeterRegistry,
 ) {
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
-        statistikkApi(prometheusMeterRegistry)
+        statistikkApi(prometheusMeterRegistry, tmpPersistance)
     }.build().apply {
 
     }.apply {
@@ -42,3 +43,14 @@ val JsonMessage.microfrontendId: String
     get() {
         return get("microfrontend_id").asText()
     }
+
+val tmpPersistance = object : StatistikkPersistence {
+    override fun updateLoginCount(ident: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getCSV(): String {
+        TODO("Not yet implemented")
+    }
+
+}
