@@ -23,7 +23,7 @@ class VarselPerDagSink(
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val type = packet["varselType"].textValue()
-        log.info("Teller innlogging for $type")
+        log.info("Teller varsel for $type")
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
