@@ -29,9 +29,7 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
 
         get{
 
-            val lastNedUrl = call.request.local.let {
-                """ ${it.scheme}://${it.host}:${it.port}/hent/lastned""""
-            }
+            val lastNedUrl = "/lastned"
 
             call.respondHtml(HttpStatusCode.OK) {
                 head {
