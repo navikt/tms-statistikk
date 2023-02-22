@@ -36,6 +36,7 @@ dependencies {
     implementation(Ktor2.Server.contentNegotiation)
     implementation(Ktor2.Server.auth)
     implementation(Ktor2.Server.authJwt)
+    implementation("io.ktor:ktor-server-html-builder:${default.Ktor2Defaults.version}")
     implementation(Ktor2.Serialization.jackson)
     implementation(TmsKtorTokenSupport.azureValidation)
     implementation(TmsKtorTokenSupport.authenticationInstaller)
@@ -51,6 +52,10 @@ dependencies {
     testImplementation(Ktor2.Test.serverTestHost)
     testImplementation(TmsKtorTokenSupport.authenticationInstallerMock)
     testImplementation(TmsKtorTokenSupport.azureValidationMock)
+    testImplementation(Mockk.mockk)
+    testImplementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.8.0")
+
+
 }
 
 application {
