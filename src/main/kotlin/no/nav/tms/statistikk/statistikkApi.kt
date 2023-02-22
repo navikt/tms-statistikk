@@ -6,10 +6,14 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.authenticate
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.routing.routing
+import no.nav.tms.statistikk.database.PostgresDatabase
+import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.token.support.authentication.installer.installAuthenticators
 import java.text.DateFormat
 
 internal fun Application.statistikkApi(
+    database: PostgresDatabase,
     installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
     installAuthenticatorsFunction()
@@ -22,7 +26,9 @@ internal fun Application.statistikkApi(
     }
 
     routing {
-        authenticate {}
+        authenticate {
+            loginApi(LoginRepository(database))
+        }
     }
 }
 
