@@ -4,7 +4,6 @@ import no.nav.personbruker.dittnav.common.util.config.StringEnvVar.getEnvVar
 
 data class Environment(
     val groupId: String = getEnvVar("GROUP_ID"),
-    val varselTopic: String = getEnvVar("VARSEL_TOPIC"),
     val dbUrl: String = getDbUrl(),
     val dbUser: String = getEnvVar("DB_USERNAME"),
     val dbPassword: String = getEnvVar("DB_PASSWORD"),
@@ -18,11 +17,12 @@ data class Environment(
     fun rapidConfig(): Map<String, String> = mapOf(
         "KAFKA_BROKERS" to kafkaBrokers,
         "KAFKA_CONSUMER_GROUP_ID" to groupId,
-        "KAFKA_RAPID_TOPIC" to varselTopic,
+        "KAFKA_RAPID_TOPIC" to "min-side.brukervarsel-v1",
         "KAFKA_KEYSTORE_PATH" to kafkaKeystorePath,
         "KAFKA_CREDSTORE_PASSWORD" to kafkaCredstorePassword,
         "KAFKA_TRUSTSTORE_PATH" to kafkaTruststorePath,
         "KAFKA_RESET_POLICY" to "earliest",
+        "KAFKA_EXTRA_TOPIC" to "min-side.aapen-utkast-v1",
         "HTTP_PORT" to "8080"
     )
 }
