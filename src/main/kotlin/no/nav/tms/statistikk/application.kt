@@ -7,6 +7,9 @@ import no.nav.tms.statistikk.api.StatistikkPersistence
 import no.nav.tms.statistikk.database.Database
 import no.nav.tms.statistikk.database.Flyway
 import no.nav.tms.statistikk.database.PostgresDatabase
+import no.nav.tms.statistikk.varsel.VarselPerDagSink
+import no.nav.tms.statistikk.varsel.VarselRepository
+import no.nav.tms.statistikk.database.PostgresDatabase
 
 fun main() {
     val environment = Environment()
@@ -20,10 +23,14 @@ private fun startRapid(
     environment: Environment,
     database: Database
 ) {
+    val database = PostgresDatabase(environment)
+
+    val varselRepository = VarselRepository(database)
+
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
-        statistikkApi(StatistikkPersistence(database))
+        statistikkApi(database)
     }.build().apply {
-        VarselPerDagSink(this)
+        VarselPerDagSink(this, varselRepository)
     }.apply {
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {

@@ -6,11 +6,15 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import no.nav.tms.statistikk.api.StatistikkPersistence
+import no.nav.tms.statistikk.database.PostgresDatabase
+import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.statistikk.api.statistikk
 import java.text.DateFormat
 
 internal fun Application.statistikkApi(
-    persistence: StatistikkPersistence
+    database: PostgresDatabase,
+    installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
     install(ContentNegotiation) {
         jackson {
@@ -19,7 +23,10 @@ internal fun Application.statistikkApi(
         }
     }
     routing {
-        statistikk(persistence)
+        authenticate {
+            loginApi(LoginRepository(database))
+        }
+        statistikk(StatistikkPersistence(database))
     }
 }
 
