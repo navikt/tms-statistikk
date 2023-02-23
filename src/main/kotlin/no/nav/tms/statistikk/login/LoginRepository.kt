@@ -7,9 +7,9 @@ import java.time.LocalDate
 class LoginRepository(private val database: Database) {
     fun registerLogin(ident: String) = database.update {
         queryOf(
-            "insert into innlogging(dato, ident) values (:dato, :ident) on conflict do nothing",
+            "insert into innlogging_per_dag(dato, ident) values (:dato, :ident) on conflict do nothing",
             mapOf(
-                "dato" to LocalDate.now().toString(),
+                "dato" to LocalDate.now(),
                 "ident" to ident
             )
         )

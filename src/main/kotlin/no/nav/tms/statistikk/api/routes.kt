@@ -17,14 +17,7 @@ import java.io.OutputStream
 import java.time.LocalDate
 import java.time.ZoneId
 
-internal fun Routing.statistikk(persitance: StatistikkPersistence) {
-    route("/innlogging") {
-        post {
-            persitance.updateLoginCount(call.receive<InnloggingRequestBody>().ident)
-            call.respond(HttpStatusCode.NoContent)
-        }
-    }
-
+fun Routing.statistikk(persitance: StatistikkPersistence) {
     route("/hent") {
 
         get{
@@ -57,7 +50,7 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
     }
 }
 
-internal class StatistikkPersistence(private val database: Database) {
+class StatistikkPersistence(private val database: Database) {
     fun updateLoginCount(ident: String) {
         database.update {
             queryOf(
