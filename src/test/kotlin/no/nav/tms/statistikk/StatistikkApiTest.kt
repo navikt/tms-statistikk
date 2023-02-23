@@ -19,7 +19,7 @@ internal class StatistikkApiTest {
     private val statsPersistence = StatistikkPersistence(db)
 
     @Test
-    fun `innlogging`() = testApplication {
+    fun innlogging() = testApplication {
         application {
             statistikkApi(statsPersistence)
         }
@@ -76,7 +76,6 @@ internal class StatistikkApiTest {
             headers["Content-Type"] shouldBe "text/csv"
             val csvData = bodyAsText()
             csvReader().readAll(csvData).size shouldBe 2
-
         }
     }
 }

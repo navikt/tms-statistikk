@@ -6,16 +6,12 @@ import io.ktor.server.html.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.html.a
-import kotlinx.html.body
-import kotlinx.html.h1
-import kotlinx.html.head
-import kotlinx.html.title
 import kotliquery.queryOf
+import no.nav.tms.statistikk.api.Statistikk.Companion.buildStats
 import no.nav.tms.statistikk.database.Database
-import java.io.OutputStream
 import java.time.LocalDate
 import java.time.ZoneId
+
 
 internal fun Routing.statistikk(persitance: StatistikkPersistence) {
     route("/innlogging") {
@@ -27,31 +23,15 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
 
     route("/hent") {
 
-        get{
-
-            val lastNedUrl = "/hent/lastned"
-
-            call.respondHtml(HttpStatusCode.OK) {
-                head {
-                    title("Min side stats")
-                }
-                body {
-                    h1("Backend statistikk for min side")
-                    a{
-                        href = lastNedUrl
-                        text("Last ned CSV-fil")
-                    }
-
-                }
-            }
-
+        get {
+            call.respondHtml(HttpStatusCode.OK) { buildStats(persitance.getStatistikk()) }
         }
 
         get("/lastned") {
             call.response.header("Content-Disposition", "attachment; filename=\"stats.csv\"")
-            call.response.header("Content-Type","text/csv")
+            call.response.header("Content-Type", "text/csv")
             call.respondOutputStream {
-                writeCsv(persitance.getCSV())
+                writeCsv(persitance.getStatistikk())
             }
         }
     }
@@ -69,24 +49,26 @@ internal class StatistikkPersistence(private val database: Database) {
         }
 
     }
-    fun getCSV(): CSVContent? =
+
+    fun getStatistikk(): Statistikk? =
         database.query {
-            queryOf("SELECT COUNT(ident) as total FROM innlogging_per_dag")
+            //language=PostgreSQL
+            queryOf(
+                """
+                    select to_char(dato,'mm') as month,to_char(dato,'YYYY') as year, count(*) from innlogging_per_dag
+                    group by month,year
+                    order by month,year
+                    """
+            )
                 .map {
-                    CSVContent(it.int("total"))
+                    Statistikk(
+                        innlogginger_per_dag = it.int("count"),
+                        måned = it.string("month"),
+                        år = it.string("year")
+                    )
                 }.asSingle
         }
 }
 
 data class InnloggingRequestBody(val ident: String)
 
-data class CSVContent(val innlogginger_per_dag: Int)
-
-private fun OutputStream.writeCsv(csvContent: CSVContent?) {
-    require(csvContent!=null)
-    val writer = bufferedWriter()
-    writer.write(""" Måned,Gjennomsnitt innloggede pr dag""")
-    writer.newLine()
-    writer.write(""" Februar, ${csvContent.innlogginger_per_dag} """)
-    writer.flush()
-}
