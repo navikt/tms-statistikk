@@ -9,6 +9,7 @@ import io.ktor.server.routing.*
 import kotliquery.queryOf
 import no.nav.tms.statistikk.api.Statistikk.Companion.buildStats
 import no.nav.tms.statistikk.database.Database
+import java.io.OutputStream
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -37,7 +38,7 @@ internal fun Routing.statistikk(persitance: StatistikkPersistence) {
     }
 }
 
-internal class StatistikkPersistence(private val database: Database) {
+class StatistikkPersistence(private val database: Database) {
     fun updateLoginCount(ident: String) {
         database.update {
             queryOf(
@@ -71,4 +72,15 @@ internal class StatistikkPersistence(private val database: Database) {
 }
 
 data class InnloggingRequestBody(val ident: String)
+
+data class CSVContent(val innlogginger_per_dag: Int)
+
+private fun OutputStream.writeCsv(csvContent: CSVContent?) {
+    require(csvContent != null)
+    val writer = bufferedWriter()
+    writer.write("""Gjennomsnitt innloggede pr dag""")
+    writer.newLine()
+    writer.write("""${csvContent.innlogginger_per_dag} """)
+    writer.flush()
+}
 

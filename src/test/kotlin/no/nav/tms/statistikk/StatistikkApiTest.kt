@@ -6,22 +6,26 @@ import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
 import no.nav.tms.statistikk.api.StatistikkPersistence
-import org.junit.Test
+import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.token.support.azure.validation.mock.installAzureAuthMock
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class StatistikkApiTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
-    private val statsPersistence = StatistikkPersistence(db)
+    private val loginRepository = LoginRepository(db)
+    private val persistence = StatistikkPersistence(db)
 
     @Test
     fun innlogging() = testApplication {
         application {
-            statistikkApi(statsPersistence)
+            statistikkApi(loginRepository, persistence, testAuth)
         }
 
         client.post("/innlogging") {
@@ -56,7 +60,7 @@ internal class StatistikkApiTest {
     @Test
     fun `Csv hente-side`() = testApplication {
         application {
-            statistikkApi(statsPersistence)
+            statistikkApi(loginRepository, persistence, testAuth)
         }
 
         client.get("/hent").assert {
@@ -68,7 +72,7 @@ internal class StatistikkApiTest {
     @Test
     fun `csv fil nedlasting`() = testApplication {
         application {
-            statistikkApi(statsPersistence)
+            statistikkApi(loginRepository, persistence, testAuth)
         }
 
         client.get("/hent/lastned").assert {
@@ -76,6 +80,13 @@ internal class StatistikkApiTest {
             headers["Content-Type"] shouldBe "text/csv"
             val csvData = bodyAsText()
             csvReader().readAll(csvData).size shouldBe 2
+        }
+    }
+
+    private val testAuth: Application.() -> Unit = {
+        installAzureAuthMock {
+            setAsDefault = true
+            alwaysAuthenticated = true
         }
     }
 }

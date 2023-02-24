@@ -3,15 +3,23 @@ package no.nav.tms.statistikk
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
 import no.nav.tms.statistikk.api.StatistikkPersistence
+import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.statistikk.api.statistikk
+import no.nav.tms.token.support.azure.validation.installAzureAuth
 import java.text.DateFormat
 
-internal fun Application.statistikkApi(
-    persistence: StatistikkPersistence
+fun Application.statistikkApi(
+    loginRepository: LoginRepository,
+    statistikkPersistence: StatistikkPersistence,
+    installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
+    installAuthenticatorsFunction()
+
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
@@ -19,8 +27,15 @@ internal fun Application.statistikkApi(
         }
     }
     routing {
-        statistikk(persistence)
+        authenticate {
+            loginApi(loginRepository)
+        }
+        statistikk(statistikkPersistence)
     }
 }
 
-
+fun installAuth(): Application.() -> Unit = {
+    installAzureAuth {
+        setAsDefault = true
+    }
+}

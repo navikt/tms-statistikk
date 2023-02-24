@@ -1,16 +1,12 @@
-package no.nav.tms.statistikk
+package no.nav.tms.statistikk.varsel
 
 import mu.KotlinLogging
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageContext
-import no.nav.helse.rapids_rivers.MessageProblems
-import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.*
 
 class VarselPerDagSink(
     rapidsConnection: RapidsConnection,
-) :
-    River.PacketListener {
+    private val repository: VarselRepository
+): River.PacketListener {
 
     private val log = KotlinLogging.logger {}
 
@@ -22,11 +18,17 @@ class VarselPerDagSink(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        val type = packet["varselType"].textValue()
-        log.info("Teller varsel for $type")
+        repository.registerVarselPerDag(deserializeVarsel(packet))
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
         log.info(problems.toString())
     }
+
+    private fun deserializeVarsel(jsonMessage: JsonMessage) = Varsel(
+        ident = jsonMessage["fodselsnummer"].textValue(),
+        type = jsonMessage["varselType"].textValue(),
+        eksternVarsling = jsonMessage["eksternVarsling"].booleanValue(),
+        forstBehandlet = jsonMessage["forstBehandlet"].asLocalDateTime()
+    )
 }

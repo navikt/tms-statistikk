@@ -12,7 +12,7 @@ import kotlinx.html.title
 import kotlinx.html.tr
 import java.io.OutputStream
 
-internal class Statistikk(val innlogginger_per_dag: Int, val måned: String, val år: String) {
+class Statistikk(val innlogginger_per_dag: Int, val måned: String, val år: String) {
     val innlogginger_per_dag_line = """${måned} $år,$innlogginger_per_dag"""
 
     companion object {
