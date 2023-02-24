@@ -3,7 +3,7 @@ package no.nav.tms.statistikk
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidApplication.RapidApplicationConfig.Companion.fromEnv
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.tms.statistikk.api.StatistikkPersistence
+import no.nav.tms.statistikk.api.InnloggingRepository
 import no.nav.tms.statistikk.database.Flyway
 import no.nav.tms.statistikk.varsel.VarselPerDagSink
 import no.nav.tms.statistikk.varsel.VarselRepository
@@ -23,7 +23,7 @@ private fun startRapid(
     val database = PostgresDatabase(environment)
 
     val loginRepository = LoginRepository(database)
-    val statistikkPersistence = StatistikkPersistence(database)
+    val statistikkPersistence = InnloggingRepository(database)
     val varselRepository = VarselRepository(database)
 
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {

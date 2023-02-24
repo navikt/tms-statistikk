@@ -4,6 +4,8 @@ import LocalPostgresDatabase
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.statistikk.utkast.UtkastPersistance
+import no.nav.tms.statistikk.utkast.UtkastSink
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

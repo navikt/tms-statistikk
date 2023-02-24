@@ -11,10 +11,9 @@ import kotlinx.html.th
 import kotlinx.html.title
 import kotlinx.html.tr
 import java.io.OutputStream
+import java.time.LocalDate
 
-class Statistikk(val innlogginger_per_dag: Int, val måned: String, val år: String) {
-    val innlogginger_per_dag_line = """${måned} $år,$innlogginger_per_dag"""
-
+class Statistikk(val innloggingerPerDag: Int) {
     companion object {
         fun HTML.buildStats(statistikk: Statistikk?) {
             require(statistikk != null)
@@ -23,14 +22,14 @@ class Statistikk(val innlogginger_per_dag: Int, val måned: String, val år: Str
                 title("Min side stats")
             }
             body {
-                h1("Backend statistikk for min side, ${statistikk.måned} ${statistikk.måned}")
+                h1("Backend statistikk for min side for ${LocalDate.now()}")
                 table {
                     tr {
                         th {
                             +"Gjennomsnittlig innlogging på min side pr dag"
                         }
                         td {
-                            +"${statistikk.innlogginger_per_dag}"
+                            +"${statistikk.innloggingerPerDag}"
                         }
                     }
                 }
@@ -47,8 +46,8 @@ class Statistikk(val innlogginger_per_dag: Int, val måned: String, val år: Str
 internal fun OutputStream.writeCsv(statistikk: Statistikk?) {
     require(statistikk != null)
     val writer = bufferedWriter()
-    writer.write("""Måned,Gjennomsnitt innloggede pr dag""")
-    writer.newLine()
-    writer.write(statistikk.innlogginger_per_dag_line)
+    writer.write("""Gjennomsnitt innloggede pr dag, ${statistikk.innloggingerPerDag}""")
     writer.flush()
 }
+
+class StatistikkContentException(message: String): Exception(message)
