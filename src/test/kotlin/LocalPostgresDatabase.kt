@@ -1,4 +1,5 @@
 import com.zaxxer.hikari.HikariDataSource
+import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import org.flywaydb.core.Flyway
 import org.testcontainers.containers.PostgreSQLContainer
@@ -44,6 +45,14 @@ class LocalPostgresDatabase private constructor() : Database {
             .dataSource(dataSource)
             .load()
             .migrate()
+    }
+}
+
+internal fun Database.cleanTables(vararg tables:String){
+    tables.forEach { table ->
+        update {
+            queryOf("delete from $table")
+        }
     }
 }
 

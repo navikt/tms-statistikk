@@ -1,6 +1,7 @@
 package no.nav.tms.statistikk
 
 import assert
+import cleanTables
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
@@ -9,9 +10,9 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
-import no.nav.tms.statistikk.api.InnloggingRepository
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.token.support.azure.validation.mock.installAzureAuthMock
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
@@ -20,12 +21,16 @@ internal class StatistikkApiTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val loginRepository = LoginRepository(db)
-    private val persistence = InnloggingRepository(db)
+
+    @BeforeEach
+    fun cleanDb(){
+        db.cleanTables("innlogging_per_dag")
+    }
 
     @Test
     fun innlogging() = testApplication {
         application {
-            statistikkApi(loginRepository, persistence, testAuth)
+            statistikkApi(loginRepository, authorized)
         }
 
         client.post("/innlogging") {
@@ -60,7 +65,7 @@ internal class StatistikkApiTest {
     @Test
     fun `Csv hente-side`() = testApplication {
         application {
-            statistikkApi(loginRepository, persistence, testAuth)
+            statistikkApi(loginRepository, unauthorized)
         }
 
         client.get("/hent").assert {
@@ -70,23 +75,40 @@ internal class StatistikkApiTest {
     }
 
     @Test
-    fun `csv fil nedlasting`() = testApplication {
+    fun `csv innlogging nedlasting`() = testApplication {
+
+        loginRepository.registerLogin("1234576512")
+        loginRepository.registerLogin("1234576515")
+        loginRepository.registerLogin("1234576516")
+
         application {
-            statistikkApi(loginRepository, persistence, testAuth)
+            statistikkApi(loginRepository, unauthorized)
         }
 
-        client.get("/hent/lastned").assert {
+
+        client.get("/hent/innlogging").assert {
             status.shouldBe(HttpStatusCode.OK)
             headers["Content-Type"] shouldBe "text/csv"
-            val csvData = bodyAsText()
-            csvReader().readAll(csvData).size shouldBe 1
+            headers["Content-Disposition"] shouldBe "attachment; filename=\"innlogging.csv\""
+            csvReader().readAll(bodyAsText()).apply {
+                size shouldBe 1
+                first()[0] shouldBe "Innlogging etter ekstern varsling"
+                first()[1].toInt() shouldBe 3
+            }
         }
     }
 
-    private val testAuth: Application.() -> Unit = {
+    private val authorized: Application.() -> Unit = {
         installAzureAuthMock {
             setAsDefault = true
             alwaysAuthenticated = true
+        }
+    }
+
+    private val unauthorized: Application.() -> Unit = {
+        installAzureAuthMock {
+            setAsDefault = true
+            alwaysAuthenticated = false
         }
     }
 }

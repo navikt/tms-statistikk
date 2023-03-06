@@ -14,4 +14,18 @@ class LoginRepository(private val database: Database) {
             )
         )
     }
+
+    fun `innlogging samme dag etter ekstern varsling`():Int= database.query {
+        //language=PostgreSQL
+        queryOf(
+            """
+                    select to_char(dato,'mm') as month,to_char(dato,'YYYY') as year, count(*) from innlogging_per_dag
+                    group by month,year
+                    order by month,year
+                    """
+        )
+            .map {
+                it.int("count")
+            }.asSingle
+    } ?: 0
 }

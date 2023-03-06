@@ -1,7 +1,7 @@
 # tms-statistikk
 
 _samler data for bruk i statistikk._ 
-Datakilder: kafketopics og direkte kall fra FE-applikasjoner
+Datakilder: kafkatopics og direkte kall fra FE-applikasjoner
 
 ## api
 
@@ -35,7 +35,7 @@ paths:
       produces: 
         - text/html
       responses: 
-        '204':
+        '202':
           description: OK
 ```
 
