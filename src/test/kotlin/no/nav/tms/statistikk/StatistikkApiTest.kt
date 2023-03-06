@@ -9,7 +9,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
-import no.nav.tms.statistikk.api.StatistikkPersistence
+import no.nav.tms.statistikk.api.InnloggingRepository
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.token.support.azure.validation.mock.installAzureAuthMock
 import org.junit.jupiter.api.Test
@@ -20,10 +20,10 @@ internal class StatistikkApiTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val loginRepository = LoginRepository(db)
-    private val persistence = StatistikkPersistence(db)
+    private val persistence = InnloggingRepository(db)
 
     @Test
-    fun `innlogging`() = testApplication {
+    fun innlogging() = testApplication {
         application {
             statistikkApi(loginRepository, persistence, testAuth)
         }
@@ -79,8 +79,7 @@ internal class StatistikkApiTest {
             status.shouldBe(HttpStatusCode.OK)
             headers["Content-Type"] shouldBe "text/csv"
             val csvData = bodyAsText()
-            csvReader().readAll(csvData).size shouldBe 2
-
+            csvReader().readAll(csvData).size shouldBe 1
         }
     }
 
