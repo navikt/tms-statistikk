@@ -16,6 +16,12 @@ interface Database {
         }
     }
 
+    fun updateReturningCount(queryBuilder: () -> Query) =
+        using(sessionOf(dataSource)) {
+            it.run(queryBuilder.invoke().asUpdate)
+        }
+
+
     fun <T> query(action: () -> NullableResultQueryAction<T>): T? =
         using(sessionOf(dataSource)) {
             it.run(action.invoke())

@@ -3,9 +3,10 @@ package no.nav.tms.statistikk.login
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 class LoginRepository(private val database: Database) {
-    fun registerLogin(ident: String) = database.update {
+    fun registerLogin(ident: String) = database.updateReturningCount {
         queryOf(
             "insert into innlogging_per_dag(dato, ident) values (:dato, :ident) on conflict do nothing",
             mapOf(
@@ -13,9 +14,25 @@ class LoginRepository(private val database: Database) {
                 "ident" to ident
             )
         )
+    }.also {
+        if (it > 0) {
+            database.update {
+                queryOf(
+                    """update innlogging_etter_eksternt_varsel
+                        set innloggetTimestamp=:nowTime
+                        where ident=:ident and sendtTimestamp::date=:nowDate
+                """.trimIndent(),
+                    mapOf(
+                        "ident" to ident,
+                        "nowTime" to LocalDateTime.now(),
+                        "nowDate" to LocalDate.now()
+                    )
+                )
+            }
+        }
     }
 
-    fun `innlogging samme dag etter ekstern varsling`():Int= database.query {
+    fun `innlogging samme dag etter ekstern varsling`(): Int = database.query {
         //language=PostgreSQL
         queryOf(
             """
