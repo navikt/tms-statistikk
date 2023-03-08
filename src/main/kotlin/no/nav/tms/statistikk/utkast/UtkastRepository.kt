@@ -5,7 +5,7 @@ import no.nav.tms.statistikk.database.Database
 import java.time.LocalDate
 import java.time.ZoneId
 
-internal class UtkastPersistance(val database: Database) {
+internal class UtkastRespository(val database: Database) {
     fun put(utkastId: String, ident: String, event: String, antallSpråk: Int) {
         database.update {
             //language=PostgreSQL

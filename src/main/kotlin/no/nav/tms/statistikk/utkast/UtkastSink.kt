@@ -7,7 +7,7 @@ import no.nav.helse.rapids_rivers.River
 
 internal class UtkastSink(
     rapidsConnection: RapidsConnection,
-    val utkastPersistance: UtkastPersistance
+    val utkastRespository: UtkastRespository
 ) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
@@ -19,7 +19,7 @@ internal class UtkastSink(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
-        utkastPersistance.put(
+        utkastRespository.put(
             utkastId = packet["utkastId"].asText(),
             ident = packet["ident"].asText(),
             event = packet["@event_name"].asText(),
