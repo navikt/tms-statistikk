@@ -25,7 +25,7 @@ class VarselPerDagSink(
         log.info(problems.toString())
     }
 
-    private fun deserializeVarsel(jsonMessage: JsonMessage) = Varsel(
+    private fun deserializeVarsel(jsonMessage: JsonMessage) = VarselPerDag(
         ident = jsonMessage["fodselsnummer"].textValue(),
         type = jsonMessage["varselType"].textValue(),
         eksternVarsling = jsonMessage["eksternVarsling"].booleanValue(),
