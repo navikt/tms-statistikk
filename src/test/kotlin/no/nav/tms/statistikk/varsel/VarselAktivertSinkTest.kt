@@ -4,6 +4,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.statistikk.LocalDateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -36,7 +37,7 @@ internal class VarselAktivertSinkTest {
         val link = "http://link"
         val namespace = "ns"
         val appnavn = "app"
-        val forstBehandlet = LocalDateTime.now()
+        val forstBehandlet = LocalDateTimeHelper.nowAtUtc()
         val synligFremTil = null
         val eksternVarsling = true
 
@@ -99,7 +100,7 @@ internal class VarselAktivertSinkTest {
         val eventId2 = UUID.randomUUID().toString()
 
         val utenFrist = VarselTestData.varselAktivertMessage(eventId = eventId1, synligFremTil = null)
-        val medFrist = VarselTestData.varselAktivertMessage(eventId = eventId2, synligFremTil = LocalDateTime.now())
+        val medFrist = VarselTestData.varselAktivertMessage(eventId = eventId2, synligFremTil = LocalDateTimeHelper.nowAtUtc())
 
         testRapid.sendTestMessage(utenFrist)
         testRapid.sendTestMessage(medFrist)

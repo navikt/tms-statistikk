@@ -3,6 +3,7 @@ package no.nav.tms.statistikk.varsel
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.statistikk.LocalDateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -30,7 +31,7 @@ internal class VarselInaktivertSinkTest {
     fun `registrerer at varsel har blitt inaktivert`() {
         val eventId = UUID.randomUUID().toString()
         val kilde = "bruker"
-        val inaktivertTidspunkt = LocalDateTime.now().minusHours(1).truncatedTo(ChronoUnit.SECONDS)
+        val inaktivertTidspunkt = LocalDateTimeHelper.nowAtUtc().minusHours(1)
 
         testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId))
         testRapid.sendTestMessage(VarselTestData.varselInaktivertMessage(eventId = eventId, kilde = kilde, tidspunkt = inaktivertTidspunkt))

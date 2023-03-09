@@ -1,5 +1,6 @@
 package no.nav.tms.statistikk.varsel
 
+import no.nav.tms.statistikk.LocalDateTimeHelper.nowAtUtc
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import java.time.LocalDateTime
 import java.time.LocalDateTime.now
@@ -13,14 +14,14 @@ object VarselTestData {
         type: VarselType = beskjed,
         eventId: String = UUID.randomUUID().toString(),
         eksternVarsling: Boolean = false,
-        forstBehandlet: LocalDateTime = now(),
+        forstBehandlet: LocalDateTime = nowAtUtc(),
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         tekst: String = "tekst",
         link: String = "https://link",
         sikkerhetsnivaa: Int = 3,
-        sistOppdatert: LocalDateTime = now(),
-        synligFremTil: LocalDateTime? = now().plusWeeks(2),
+        sistOppdatert: LocalDateTime = nowAtUtc(),
+        synligFremTil: LocalDateTime? = nowAtUtc().plusWeeks(2),
     )
     = """
         {
@@ -46,7 +47,7 @@ object VarselTestData {
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         kilde: String = "produsent",
-        tidspunkt: LocalDateTime = now()
+        tidspunkt: LocalDateTime = nowAtUtc()
     )
     = """
         {
@@ -66,7 +67,7 @@ object VarselTestData {
         kanal: String = "SMS",
         namespace: String = "namespace",
         appnavn: String = "appnavn",
-        tidspunkt: LocalDateTime = now()
+        tidspunkt: LocalDateTime = nowAtUtc()
     )
     = """
        {
