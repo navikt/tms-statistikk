@@ -29,4 +29,27 @@ class EksternVarslingRepository(val db: Database) {
             )
         }
     }
+
+    fun updateVarsel(eksternVarslingSendt: EksternVarslingSendt) = db.update {
+
+        val updateString =
+            if(eksternVarslingSendt.kanal == Kanal.SMS) {"eksternVarslingSendtSms = true"}
+            else {"eksternVarslingSendtEpost = true"}
+
+        println("""
+            update varsel set 
+            $updateString    
+            where eventId = :eventId
+        """)
+
+        queryOf("""
+            update varsel set 
+            $updateString    
+            where eventId = :eventId
+        """,
+            mapOf(
+                "eventId" to eksternVarslingSendt.eventId
+            )
+        )
+    }
 }

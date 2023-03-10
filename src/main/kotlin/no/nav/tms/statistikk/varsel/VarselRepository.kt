@@ -76,21 +76,6 @@ class VarselRepository(private val database: Database) {
         )
     }
 
-    fun updateVarsel(eksternVarslingSendt: EksternVarslingSendt) = database.update {
-        queryOf("""
-            update varsel set 
-                eksternVarslingSendtSms = (eksternVarslingSendtSms or :sendtSms),
-                eksternVarslingSendtEpost = (eksternVarslingSendtEpost or :sendtEpost)
-            where eventId = :eventId
-        """,
-            mapOf(
-                "eventId" to eksternVarslingSendt.eventId,
-                "sendtSms" to eksternVarslingSendt.sendtSms,
-                "sendtEpost" to eksternVarslingSendt.sendtEpost
-            )
-        )
-    }
-
     fun registerVarselPerDag(varselPerDag: VarselPerDag) = database.update {
             queryOf("""
                 insert into varsler_per_dag(dato, ident, type, ekstern_varsling, antall)

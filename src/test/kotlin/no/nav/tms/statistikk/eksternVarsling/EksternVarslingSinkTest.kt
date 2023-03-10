@@ -6,19 +6,26 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.statistikk.varsel.VarselAktivertSink
+import no.nav.tms.statistikk.varsel.VarselRepository
+import no.nav.tms.statistikk.varsel.VarselTestData
+import no.nav.tms.statistikk.varsel.getVarsel
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDateTime
+import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class EksternVarslingSinkTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val testRapid = TestRapid()
+    private val varselRepository = VarselRepository(db)
 
     init {
         EksternVarslingSink(testRapid, EksternVarslingRepository(db))
+        VarselAktivertSink(testRapid, varselRepository)
     }
 
 
@@ -63,7 +70,7 @@ internal class EksternVarslingSinkTest {
         val testIdent = "987654"
         val previous = LocalDateTime.now().minusDays(11)
 
-        db.insertEksterntTestVarsel(testEvent,testIdent,previous,Kanal.EPOST)
+        db.insertEksterntTestVarsel(testEvent, testIdent, previous, Kanal.EPOST)
 
         testRapid.sendTestMessage(Kanal.SMS.testMessage(testEvent, testIdent))
         testRapid.sendTestMessage(Kanal.EPOST.testMessage(testEvent, testIdent))
@@ -71,6 +78,35 @@ internal class EksternVarslingSinkTest {
         db.getEksternVarsling(eventId = testEvent).assert {
             size shouldBe 2
         }
+    }
+
+    @Test
+    fun `oppdaterer status om ekstern varsling`() {
+        val eventId1 = UUID.randomUUID().toString()
+        val eventId2 = UUID.randomUUID().toString()
+        val eventId3 = UUID.randomUUID().toString()
+
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId1, eksternVarsling = true))
+        testRapid.sendTestMessage(Kanal.SMS.testMessage(eventId1))
+
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId2, eksternVarsling = true))
+        testRapid.sendTestMessage(Kanal.EPOST.testMessage(eventId2))
+
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId3, eksternVarsling = true))
+        testRapid.sendTestMessage(Kanal.EPOST.testMessage(eventId3))
+        testRapid.sendTestMessage(Kanal.SMS.testMessage(eventId3))
+
+        val varsel1 = db.getVarsel(eventId1)!!
+        varsel1.eksternVarslingSendtSms shouldBe true
+        varsel1.eksternVarslingSendtEpost shouldBe false
+
+        val varsel2 = db.getVarsel(eventId2)!!
+        varsel2.eksternVarslingSendtSms shouldBe false
+        varsel2.eksternVarslingSendtEpost shouldBe true
+
+        val varsel3 = db.getVarsel(eventId3)!!
+        varsel3.eksternVarslingSendtSms shouldBe true
+        varsel3.eksternVarslingSendtEpost shouldBe true
     }
 }
 
