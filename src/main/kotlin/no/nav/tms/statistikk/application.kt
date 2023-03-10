@@ -28,7 +28,6 @@ private fun startRapid(
     }.build().apply {
         VarselAktivertSink(this, varselRepository)
         VarselInaktivertSink(this, varselRepository)
-        EksternVarslingSendtSink(this, varselRepository)
         VarselPerDagSink(this, varselRepository)
     }.apply {
         register(object : RapidsConnection.StatusListener {

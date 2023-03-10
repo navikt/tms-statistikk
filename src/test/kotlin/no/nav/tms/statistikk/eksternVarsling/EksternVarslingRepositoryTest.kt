@@ -22,7 +22,7 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun ` sett inn eksternt varsel`() {
-        repository.insertEksternVarsling("123", Kanal.SMS, eksternVarslingTestIdent)
+        repository.insertEksternVarsling("123", SMS, eksternVarslingTestIdent)
         db.getEksternVarsling("123").assert {
             size shouldBe 1
             first().assert {
@@ -33,7 +33,7 @@ class EksternVarslingRepositoryTest {
             }
         }
 
-        repository.insertEksternVarsling("123", Kanal.EPOST, eksternVarslingTestIdent)
+        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -49,9 +49,9 @@ class EksternVarslingRepositoryTest {
     @Test
     fun `revarsling`() {
         val lastVarselDate = LocalDateTime.now().minusDays(7)
-        db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, Kanal.EPOST)
+        db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, EPOST)
 
-        repository.insertEksternVarsling("123", Kanal.EPOST, eksternVarslingTestIdent)
+        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 2
@@ -68,5 +68,5 @@ class EksternVarslingRepositoryTest {
             }
         }
     }
-
 }
+

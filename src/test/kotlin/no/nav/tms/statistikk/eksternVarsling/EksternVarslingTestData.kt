@@ -7,6 +7,9 @@ import java.time.temporal.ChronoUnit
 
 const val eksternVarslingTestIdent = "987654"
 
+val EPOST ="epost"
+val SMS ="sms"
+
 internal fun Database.getEksternVarsling(eventId: String) = list {
     queryOf(
         """select eventid,ident,sendttimestamp,epost,sms from innlogging_etter_eksternt_varsel
@@ -27,7 +30,7 @@ internal fun Database.insertEksterntTestVarsel(
     eventId: String,
     ident: String,
     sentTime: LocalDateTime = LocalDateTime.now(),
-    kanal: Kanal
+    kanal: String
 ) =
     update {
         queryOf(
@@ -36,8 +39,8 @@ internal fun Database.insertEksterntTestVarsel(
                 "eventId" to eventId,
                 "ident" to ident,
                 "nowTime" to sentTime,
-                "epost" to (kanal == Kanal.EPOST),
-                "sms" to (kanal == Kanal.SMS)
+                "epost" to (kanal.erSms()),
+                "sms" to (kanal.erEpost())
             )
         )
     }
@@ -49,3 +52,5 @@ internal fun Any?.toDateTimeMinutes(): LocalDateTime {
 }
 
 internal fun LocalDateTime.toMinutes() = this.truncatedTo(ChronoUnit.MINUTES)
+private fun String.erSms() = lowercase() == "sms"
+private fun String.erEpost() = lowercase() == "epost"

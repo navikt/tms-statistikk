@@ -23,13 +23,15 @@ class EksternVarslingSink(
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         eksternVarslingRepository.insertEksternVarsling(packet.eventId, packet.kanal, packet.ident)
-        eksternVarslingRepository.updateVarsel(deserializeEksternVarslingSendt(packet))
+        eksternVarslingRepository.updateVarsel(packet.eventId,packet.kanal)
     }
-
-    private fun deserializeEksternVarslingSendt(json: JsonMessage) = EksternVarslingSendt(
-        eventId = json["eventId"].textValue(),
-        kanal = Kanal.valueOf(json["kanal"].textValue())
-    )
 }
+
+val JsonMessage.ident: String
+    get() = get("ident").asText()
+val JsonMessage.kanal: String
+    get() = get("kanal").asText()
+val JsonMessage.eventId: String
+    get() = get("eventId").asText()
 
 

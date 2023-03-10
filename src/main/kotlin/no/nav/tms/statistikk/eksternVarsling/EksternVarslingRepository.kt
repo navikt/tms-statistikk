@@ -7,49 +7,50 @@ import java.time.LocalDateTime
 
 class EksternVarslingRepository(val db: Database) {
 
-    fun insertEksternVarsling(eventId: String, kanal: Kanal, ident: String) {
-        val params = mapOf(
-            "eventId" to eventId,
-            "ident" to ident,
-            "now" to LocalDateTime.now(),
-            "epost" to (kanal == Kanal.EPOST),
-            "sms" to (kanal == Kanal.SMS)
-        )
+    fun insertEksternVarsling(eventId: String, kanal: String, ident: String) {
 
-        val conflictString = if(kanal == Kanal.EPOST) {"epost=:epost"} else {"sms=:sms"}
+        val conflictString = when{
+            kanal.erEpost() -> "DO UPDATE SET epost=true"
+            kanal.erSms() -> "DO UPDATE SET sms=true"
+            else -> "DO NOTHING"
+        }
 
         db.update {
             queryOf(
                 """INSERT INTO innlogging_etter_eksternt_varsel(eventid,ident,dato,sendttimestamp,epost,sms) 
                 |VALUES(:eventId,:ident,:now::date,:now,:epost,:sms)
                 |ON CONFLICT(eventId,dato) 
-                |DO UPDATE SET $conflictString 
+                |$conflictString 
             """.trimMargin(),
-                params
+                mapOf(
+                    "eventId" to eventId,
+                    "ident" to ident,
+                    "now" to LocalDateTime.now(),
+                    "epost" to (kanal.erEpost()),
+                    "sms" to (kanal.erSms())
+                )
             )
         }
     }
 
-    fun updateVarsel(eksternVarslingSendt: EksternVarslingSendt) = db.update {
+    fun updateVarsel(eventId:String,kanal:String) = db.update {
 
-        val updateString =
-            if(eksternVarslingSendt.kanal == Kanal.SMS) {"eksternVarslingSendtSms = true"}
-            else {"eksternVarslingSendtEpost = true"}
-
-        println("""
+        queryOf(
+            """
             update varsel set 
-            $updateString    
-            where eventId = :eventId
-        """)
-
-        queryOf("""
-            update varsel set 
-            $updateString    
+                eksternVarslingSendtSms = (eksternVarslingSendtSms or :sendtSms),
+                eksternVarslingSendtEpost = (eksternVarslingSendtEpost or :sendtEpost)
             where eventId = :eventId
         """,
             mapOf(
-                "eventId" to eksternVarslingSendt.eventId
+                "eventId" to eventId,
+                "sendtSms" to (kanal.erSms()),
+                "sendtEpost" to (kanal.erEpost())
+
             )
         )
     }
 }
+
+private fun String.erSms() = lowercase() == "sms"
+private fun String.erEpost() = lowercase() == "epost"

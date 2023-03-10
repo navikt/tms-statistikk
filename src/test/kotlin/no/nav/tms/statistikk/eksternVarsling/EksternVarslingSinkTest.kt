@@ -36,8 +36,8 @@ internal class EksternVarslingSinkTest {
 
     @Test
     fun `Plukker opp ekstern varsling sendt`() {
-        testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
+        testRapid.sendTestMessage(SMS.testMessage("123"))
+        testRapid.sendTestMessage(EPOST.testMessage("124"))
 
         db.getEksternVarsling("123").first() shouldNotBe null
         db.getEksternVarsling("124").first() shouldNotBe null
@@ -45,16 +45,16 @@ internal class EksternVarslingSinkTest {
 
     @Test
     fun `Oppdaterer varslingskanaler`() {
-        testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage("123"))
+        testRapid.sendTestMessage(SMS.testMessage("123"))
+        testRapid.sendTestMessage(EPOST.testMessage("123"))
         db.getEksternVarsling("123").assert {
             size shouldNotBe 0
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
         }
 
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
-        testRapid.sendTestMessage(Kanal.SMS.testMessage("124"))
+        testRapid.sendTestMessage(EPOST.testMessage("124"))
+        testRapid.sendTestMessage(SMS.testMessage("124"))
 
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -70,10 +70,10 @@ internal class EksternVarslingSinkTest {
         val testIdent = "987654"
         val previous = LocalDateTime.now().minusDays(11)
 
-        db.insertEksterntTestVarsel(testEvent, testIdent, previous, Kanal.EPOST)
+        db.insertEksterntTestVarsel(testEvent, testIdent, previous, EPOST)
 
-        testRapid.sendTestMessage(Kanal.SMS.testMessage(testEvent, testIdent))
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage(testEvent, testIdent))
+        testRapid.sendTestMessage(SMS.testMessage(testEvent, testIdent))
+        testRapid.sendTestMessage(EPOST.testMessage(testEvent, testIdent))
 
         db.getEksternVarsling(eventId = testEvent).assert {
             size shouldBe 2
@@ -87,14 +87,14 @@ internal class EksternVarslingSinkTest {
         val eventId3 = UUID.randomUUID().toString()
 
         testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId1, eksternVarsling = true))
-        testRapid.sendTestMessage(Kanal.SMS.testMessage(eventId1))
+        testRapid.sendTestMessage(SMS.testMessage(eventId1))
 
         testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId2, eksternVarsling = true))
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage(eventId2))
+        testRapid.sendTestMessage(EPOST.testMessage(eventId2))
 
         testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId3, eksternVarsling = true))
-        testRapid.sendTestMessage(Kanal.EPOST.testMessage(eventId3))
-        testRapid.sendTestMessage(Kanal.SMS.testMessage(eventId3))
+        testRapid.sendTestMessage(EPOST.testMessage(eventId3))
+        testRapid.sendTestMessage(SMS.testMessage(eventId3))
 
         val varsel1 = db.getVarsel(eventId1)!!
         varsel1.eksternVarslingSendtSms shouldBe true
@@ -111,7 +111,7 @@ internal class EksternVarslingSinkTest {
 }
 
 
-private fun Kanal.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
+private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
       "@event_name": "eksternStatusOppdatert",
       "ident": "$ident",
       "status": "sendt",
@@ -119,6 +119,5 @@ private fun Kanal.testMessage(eventId: String, ident: String = eksternVarslingTe
       "varselType": "oppgave",
       "namespace": "pto",
       "appnavn": "veilarbaktivitet",
-      "kanal": "${this.name}"
+      "kanal": "${this}"
     }"""
-
