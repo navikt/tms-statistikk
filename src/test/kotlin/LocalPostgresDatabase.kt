@@ -48,7 +48,7 @@ class LocalPostgresDatabase private constructor() : Database {
     }
 }
 
-internal fun Database.cleanTables(vararg tables:String){
+internal fun Database.cleanTables(vararg tables: String) {
     tables.forEach { table ->
         update {
             queryOf("delete from $table")

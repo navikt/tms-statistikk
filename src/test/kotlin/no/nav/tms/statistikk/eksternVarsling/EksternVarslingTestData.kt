@@ -1,0 +1,50 @@
+package no.nav.tms.statistikk.eksternVarsling
+
+import kotliquery.queryOf
+import no.nav.tms.statistikk.database.Database
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
+
+internal fun Database.getEksternVarsling(eventId: String) = list {
+    queryOf(
+        """select eventid,ident,sendttimestamp,epost,sms from innlogging_etter_eksternt_varsel
+                    |where eventid=:eventId""".trimMargin(),
+        mapOf("eventId" to eventId)
+    ).map {
+        mapOf(
+            "eventId" to it.string("eventid"),
+            "ident" to it.string("ident"),
+            "sendt" to it.localDateTime("sendttimestamp"),
+            "epost" to it.boolean("epost"),
+            "sms" to it.boolean("sms")
+
+        )
+    }.asList
+}
+
+internal fun Database.insertTestEksterntVarsel(
+    eventId: String,
+    ident: String,
+    sentTime: LocalDateTime = LocalDateTime.now(),
+    kanal: Kanal
+) =
+    update {
+        queryOf(
+            "insert into innlogging_etter_eksternt_varsel(eventid,dato,ident,sendttimestamp,epost,sms) values(:eventId,:nowTime::date,:ident,:nowTime,:epost,:sms)",
+            mapOf(
+                "eventId" to eventId,
+                "ident" to ident,
+                "nowTime" to sentTime,
+                "epost" to (kanal == Kanal.EPOST),
+                "sms" to (kanal == Kanal.SMS)
+            )
+        )
+    }
+
+internal fun Any?.toDateTimeMinutes(): LocalDateTime {
+    require(this != null)
+    require(this is LocalDateTime)
+    return toMinutes()
+}
+
+internal fun LocalDateTime.toMinutes() = this.truncatedTo(ChronoUnit.MINUTES)

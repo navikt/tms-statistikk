@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource
 import kotliquery.Query
 import kotliquery.action.ListResultQueryAction
 import kotliquery.action.NullableResultQueryAction
+import kotliquery.queryOf
 
 import kotliquery.sessionOf
 import kotliquery.using
@@ -21,7 +22,6 @@ interface Database {
             it.run(queryBuilder.invoke().asUpdate)
         }
 
-
     fun <T> query(action: () -> NullableResultQueryAction<T>): T? =
         using(sessionOf(dataSource)) {
             it.run(action.invoke())
@@ -31,5 +31,4 @@ interface Database {
         using(sessionOf(dataSource)) {
             it.run(action.invoke())
         }
-
 }

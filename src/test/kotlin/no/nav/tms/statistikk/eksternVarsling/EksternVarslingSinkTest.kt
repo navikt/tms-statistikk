@@ -34,15 +34,15 @@ internal class EksternVarslingSinkTest {
         testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
 
-        getEksternVarsling("123") shouldNotBe null
-        getEksternVarsling("124") shouldNotBe null
+        db.getEksternVarsling("123") shouldNotBe null
+        db.getEksternVarsling("124") shouldNotBe null
     }
 
     @Test
     fun `Oppdaterer varslingskanaler`() {
         testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("123"))
-        getEksternVarsling("123").assert {
+        db.getEksternVarsling("123").assert {
             size shouldNotBe null
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
@@ -50,7 +50,7 @@ internal class EksternVarslingSinkTest {
 
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
         testRapid.sendTestMessage(Kanal.SMS.testMessage("124"))
-        getEksternVarsling("123"). assert {
+        db.getEksternVarsling("123").assert {
             size shouldNotBe null
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
@@ -72,37 +72,24 @@ internal class EksternVarslingSinkTest {
         }
 
         testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
-        getEksternVarsling(eventId = testEvent).assert {
+        db.getEksternVarsling(eventId = testEvent).assert {
             size shouldBe 2
-            first()["sendtDato"]shouldBe now.minusDays(7)
+            first()["sendtDato"] shouldBe now.minusDays(7)
             last()["sendtDato"] shouldBe now
             last()["sms"] shouldBe true
             last()["epost"] shouldBe false
         }
     }
-
-    private fun getEksternVarsling(eventId: String) = db.list {
-        queryOf(
-            """select count(*) from innlogging_etter_eksternt_varsel
-                    |where eventid=:eventId""".trimMargin(),
-            mapOf("eventId" to eventId)
-        ).map {
-            mapOf("eventId" to it.string("eventid"))
-        }.asList
-    }
 }
 
 
-private enum class Kanal {
-    SMS, EPOST;
+private fun Kanal.testMessage(eventId: String) = """{
+      "@event_name": "eksternStatusOppdatert",
+      "status": "sendt",
+      "eventId": "$eventId",
+      "varselType": "oppgave",
+      "namespace": "pto",
+      "appnavn": "veilarbaktivitet",
+      "kanal": "${this.name}"
+    }"""
 
-    fun testMessage(eventId: String) = """{
-  "@event_name": "eksternStatusOppdatert",
-  "status": "sendt",
-  "eventId": "$eventId",
-  "varselType": "oppgave",
-  "namespace": "pto",
-  "appnavn": "veilarbaktivitet",
-  "kanal": "${this.name}"
-}"""
-}

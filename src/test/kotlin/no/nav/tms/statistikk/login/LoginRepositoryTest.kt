@@ -3,9 +3,11 @@ package no.nav.tms.statistikk.login
 import LocalPostgresDatabase
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
+import no.nav.tms.statistikk.eksternVarsling.Kanal
+import no.nav.tms.statistikk.eksternVarsling.insertTestEksterntVarsel
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.time.LocalDateTime
+
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class LoginRepositoryTest {
@@ -16,8 +18,8 @@ internal class LoginRepositoryTest {
     @Test
     fun registerLogin() {
 
-        insertEksterntVarsel(eventId="0000-jjjj-9999", ident = "887795" )
-        insertEksterntVarsel(eventId="0000-jjjj-9988", ident = "887796")
+        db.insertTestEksterntVarsel(eventId="0000-jjjj-9999", ident = "887795", kanal = Kanal.EPOST)
+        db.insertTestEksterntVarsel(eventId="0000-jjjj-9988", ident = "887796", kanal = Kanal.EPOST)
 
         loginRepository.registerLogin("887799")
         loginRepository.registerLogin("887796")
@@ -25,7 +27,7 @@ internal class LoginRepositoryTest {
         loginRepository.registerLogin("887797")
         //duplicate
         loginRepository.registerLogin("887799")
-        insertEksterntVarsel(eventId="0000-jjjj-9977", ident = "887799")
+        db.insertTestEksterntVarsel(eventId="0000-jjjj-9977", ident = "887799", kanal = Kanal.EPOST)
 
         db.query {
             queryOf("SELECT COUNT(ident) as total FROM innlogging_per_dag")
@@ -40,13 +42,6 @@ internal class LoginRepositoryTest {
                     it.int("total")
                 }.asSingle
         } shouldBe 2
-    }
-
-    private fun insertEksterntVarsel(eventId: String, ident: String) {
-
-        db.update {
-         queryOf("insert into innlogging_etter_eksternt_varsel values(:eventId,:ident,:nowTime)", mapOf("eventId" to eventId, "ident" to ident,"nowTime" to LocalDateTime.now()))
-        }
     }
 }
 
