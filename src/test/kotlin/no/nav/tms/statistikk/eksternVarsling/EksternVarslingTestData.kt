@@ -5,6 +5,8 @@ import no.nav.tms.statistikk.database.Database
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
+const val eksternVarslingTestIdent = "987654"
+
 internal fun Database.getEksternVarsling(eventId: String) = list {
     queryOf(
         """select eventid,ident,sendttimestamp,epost,sms from innlogging_etter_eksternt_varsel
@@ -17,12 +19,11 @@ internal fun Database.getEksternVarsling(eventId: String) = list {
             "sendt" to it.localDateTime("sendttimestamp"),
             "epost" to it.boolean("epost"),
             "sms" to it.boolean("sms")
-
         )
     }.asList
 }
 
-internal fun Database.insertTestEksterntVarsel(
+internal fun Database.insertEksterntTestVarsel(
     eventId: String,
     ident: String,
     sentTime: LocalDateTime = LocalDateTime.now(),

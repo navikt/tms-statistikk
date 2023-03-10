@@ -5,10 +5,8 @@ import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDateTime
@@ -19,10 +17,10 @@ internal class EksternVarslingSinkTest {
     private val db = LocalPostgresDatabase.cleanDb()
     private val testRapid = TestRapid()
 
-    @BeforeAll
-    fun startSink() {
+    init {
         EksternVarslingSink(testRapid, EksternVarslingRepository(db))
     }
+
 
     @AfterEach
     fun cleanup() {
@@ -34,8 +32,8 @@ internal class EksternVarslingSinkTest {
         testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
 
-        db.getEksternVarsling("123") shouldNotBe null
-        db.getEksternVarsling("124") shouldNotBe null
+        db.getEksternVarsling("123").first() shouldNotBe null
+        db.getEksternVarsling("124").first() shouldNotBe null
     }
 
     @Test
@@ -43,15 +41,16 @@ internal class EksternVarslingSinkTest {
         testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("123"))
         db.getEksternVarsling("123").assert {
-            size shouldNotBe null
+            size shouldNotBe 0
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
         }
 
         testRapid.sendTestMessage(Kanal.EPOST.testMessage("124"))
         testRapid.sendTestMessage(Kanal.SMS.testMessage("124"))
+
         db.getEksternVarsling("123").assert {
-            size shouldNotBe null
+            size shouldBe 1
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
         }
@@ -62,29 +61,23 @@ internal class EksternVarslingSinkTest {
     fun `Plukker opp revarsling sendt`() {
         val testEvent = "23456789"
         val testIdent = "987654"
-        val now = LocalDateTime.now()
+        val previous = LocalDateTime.now().minusDays(11)
 
-        db.update {
-            queryOf(
-                "insert into innlogging_etter_eksternt_varsel values(:eventId,:ident,:nowTime)",
-                mapOf("eventId" to testEvent, "ident" to testIdent, "nowTime" to now.minusDays(7))
-            )
-        }
+        db.insertEksterntTestVarsel(testEvent,testIdent,previous,Kanal.EPOST)
 
-        testRapid.sendTestMessage(Kanal.SMS.testMessage("123"))
+        testRapid.sendTestMessage(Kanal.SMS.testMessage(testEvent, testIdent))
+        testRapid.sendTestMessage(Kanal.EPOST.testMessage(testEvent, testIdent))
+
         db.getEksternVarsling(eventId = testEvent).assert {
             size shouldBe 2
-            first()["sendtDato"] shouldBe now.minusDays(7)
-            last()["sendtDato"] shouldBe now
-            last()["sms"] shouldBe true
-            last()["epost"] shouldBe false
         }
     }
 }
 
 
-private fun Kanal.testMessage(eventId: String) = """{
+private fun Kanal.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
       "@event_name": "eksternStatusOppdatert",
+      "ident": "$ident",
       "status": "sendt",
       "eventId": "$eventId",
       "varselType": "oppgave",

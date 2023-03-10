@@ -22,23 +22,23 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun ` sett inn eksternt varsel`() {
-        repository.insertEksternVarsling("123", Kanal.SMS, midlertidigIdent)
+        repository.insertEksternVarsling("123", Kanal.SMS, eksternVarslingTestIdent)
         db.getEksternVarsling("123").assert {
             size shouldBe 1
             first().assert {
-                get("ident") shouldBe midlertidigIdent
+                get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe true
                 get("epost") shouldBe false
                 get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now().toMinutes()
             }
         }
 
-        repository.insertEksternVarsling("123", Kanal.EPOST, midlertidigIdent)
+        repository.insertEksternVarsling("123", Kanal.EPOST, eksternVarslingTestIdent)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 1
             first().assert {
-                get("ident") shouldBe midlertidigIdent
+                get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe true
                 get("epost") shouldBe true
                 get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now().toMinutes()
@@ -49,9 +49,9 @@ class EksternVarslingRepositoryTest {
     @Test
     fun `revarsling`() {
         val lastVarselDate = LocalDateTime.now().minusDays(7)
-        db.insertTestEksterntVarsel("123", midlertidigIdent, lastVarselDate, Kanal.EPOST)
+        db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, Kanal.EPOST)
 
-        repository.insertEksternVarsling("123", Kanal.EPOST, midlertidigIdent)
+        repository.insertEksternVarsling("123", Kanal.EPOST, eksternVarslingTestIdent)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 2
@@ -61,7 +61,7 @@ class EksternVarslingRepositoryTest {
 
             }
             last().assert {
-                get("ident") shouldBe midlertidigIdent
+                get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe false
                 get("epost") shouldBe true
                 get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now().toMinutes()
