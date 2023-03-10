@@ -4,10 +4,9 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidApplication.RapidApplicationConfig.Companion.fromEnv
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.tms.statistikk.database.Flyway
-import no.nav.tms.statistikk.varsel.VarselPerDagSink
-import no.nav.tms.statistikk.varsel.VarselRepository
 import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.varsel.*
 
 fun main() {
     val environment = Environment()
@@ -27,6 +26,9 @@ private fun startRapid(
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
         statistikkApi(loginRepository)
     }.build().apply {
+        VarselAktivertSink(this, varselRepository)
+        VarselInaktivertSink(this, varselRepository)
+        EksternVarslingSendtSink(this, varselRepository)
         VarselPerDagSink(this, varselRepository)
     }.apply {
         register(object : RapidsConnection.StatusListener {
