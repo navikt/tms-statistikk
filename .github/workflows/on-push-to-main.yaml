@@ -3,11 +3,9 @@ name: Bygg og publiser docker-image for main
 on:
   push:
     branches:
-      - master
       - main
     paths-ignore:
       - .github/workflows/**
-      - howto.md
       - README.md
 
 jobs:
