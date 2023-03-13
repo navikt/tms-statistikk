@@ -6,8 +6,6 @@ metadata:
   labels:
     team: min-side
 spec:
-  envFrom:
-    - secret: tms-statistikk-secrets
   image: {{version}}
   port: 8080
   liveness:
