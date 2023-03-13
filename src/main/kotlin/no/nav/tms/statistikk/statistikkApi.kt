@@ -6,7 +6,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.routing.*
-import no.nav.tms.statistikk.api.InnloggingRepository
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.statistikk.api.statistikk
@@ -15,7 +14,6 @@ import java.text.DateFormat
 
 fun Application.statistikkApi(
     loginRepository: LoginRepository,
-    statistikkPersistence: InnloggingRepository,
     installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
     installAuthenticatorsFunction()
@@ -30,7 +28,7 @@ fun Application.statistikkApi(
         authenticate {
             loginApi(loginRepository)
         }
-        statistikk(statistikkPersistence)
+        statistikk(loginRepository)
     }
 }
 

@@ -26,11 +26,3 @@ data class VarselInaktivert(
     val tidspunkt: LocalDateTime?,
     val kilde: String
 )
-
-data class EksternVarslingSendt(
-    val eventId: String,
-    val kanal: String
-) {
-    val sendtSms get() = kanal.lowercase() == "sms"
-    val sendtEpost get() = kanal.lowercase() == "epost"
-}
