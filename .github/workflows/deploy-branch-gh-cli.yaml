@@ -24,6 +24,7 @@ jobs:
         uses: 'actions/checkout@v3'
         with:
           ref: ${{ inputs.commit }}
+          fetch-depth: 0
 
       - name: 'Utled navn på docker-image basert på siste commit'
         run: |
