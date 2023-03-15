@@ -78,7 +78,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: 'Deployer til ${{ inputs.cluster }} ${{ github.ref_name }}'
+      - name: 'Deployer ${{ github.ref_name }} til ${{ inputs.cluster }}'
         uses: 'nais/deploy/actions/deploy@v1'
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
