@@ -36,6 +36,7 @@ dependencies {
     implementation(Ktor2.Server.contentNegotiation)
     implementation(Ktor2.Server.auth)
     implementation(Ktor2.Server.authJwt)
+    implementation(Ktor2.Server.statusPages)
     implementation("io.ktor:ktor-server-html-builder:${default.Ktor2Defaults.version}")
     implementation(Ktor2.Serialization.jackson)
     implementation(TmsKtorTokenSupport.azureValidation)
