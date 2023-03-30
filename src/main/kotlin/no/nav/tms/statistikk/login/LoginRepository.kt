@@ -20,7 +20,7 @@ class LoginRepository(private val database: Database) {
                 queryOf(
                     """update innlogging_etter_eksternt_varsel
                         set innloggetTimestamp=:nowTime
-                        where ident=:ident and sendtTimestamp::date=:nowDate
+                        where ident=:ident and innloggetTimestamp is null
                 """.trimIndent(),
                     mapOf(
                         "ident" to ident,
