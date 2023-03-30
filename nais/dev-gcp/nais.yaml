@@ -41,9 +41,14 @@ spec:
         diskSize: 10
         diskAutoresize: true
         autoBackupTime: "03:00"
+        flags:
+          - name: cloudsql.logical_decoding
+            value: "on"
         databases:
           - name: statistikk
             envVarPrefix: DB
+            users:
+              - name: datastream
         maintenanceWindow:
           day: 1
           hour: 4
