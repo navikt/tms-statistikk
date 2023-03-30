@@ -8,6 +8,8 @@ import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSink
 import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.utkast.UtkastRespository
+import no.nav.tms.statistikk.utkast.UtkastSink
 import no.nav.tms.statistikk.varsel.*
 
 fun main() {
@@ -25,6 +27,7 @@ private fun startRapid(
     val loginRepository = LoginRepository(database)
     val varselRepository = VarselRepository(database)
     val eksternVarslingRepository = EksternVarslingRepository(database)
+    val utkastRespository = UtkastRespository(database)
 
     RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
         statistikkApi(loginRepository)
@@ -33,6 +36,7 @@ private fun startRapid(
         VarselInaktivertSink(this, varselRepository)
         VarselPerDagSink(this, varselRepository)
         EksternVarslingSink(this, eksternVarslingRepository)
+        UtkastSink(this, utkastRespository)
     }.apply {
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
