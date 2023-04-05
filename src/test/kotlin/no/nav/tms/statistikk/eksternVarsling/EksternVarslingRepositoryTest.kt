@@ -23,18 +23,19 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun ` sett inn eksternt varsel`() {
-        repository.insertEksternVarsling("123", SMS, eksternVarslingTestIdent)
+        val sendtTime = LocalDateTime.now(ZoneId.of("UTC"))
+        repository.insertEksternVarsling("123", SMS, eksternVarslingTestIdent, sendtTime)
         db.getEksternVarsling("123").assert {
             size shouldBe 1
             first().assert {
                 get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe true
                 get("epost") shouldBe false
-                get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now(ZoneId.of("UTC")).toMinutes()
+                get("sendt") shouldBe sendtTime
             }
         }
 
-        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent)
+        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent, sendtTime)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -42,7 +43,7 @@ class EksternVarslingRepositoryTest {
                 get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe true
                 get("epost") shouldBe true
-                get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now(ZoneId.of("UTC")).toMinutes()
+                get("sendt") shouldBe sendtTime
             }
         }
     }
@@ -51,8 +52,9 @@ class EksternVarslingRepositoryTest {
     fun `revarsling`() {
         val lastVarselDate = LocalDateTime.now(ZoneId.of("UTC")).minusDays(7)
         db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, EPOST)
+        val sendtTime = LocalDateTime.now(ZoneId.of("UTC"))
 
-        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent)
+        repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent, sendtTime)
 
         db.getEksternVarsling("123").assert {
             size shouldBe 2
@@ -65,7 +67,7 @@ class EksternVarslingRepositoryTest {
                 get("ident") shouldBe eksternVarslingTestIdent
                 get("sms") shouldBe false
                 get("epost") shouldBe true
-                get("sendt").toDateTimeMinutes() shouldBe LocalDateTime.now(ZoneId.of("UTC")).toMinutes()
+                get("sendt") shouldBe sendtTime
             }
         }
     }

@@ -119,5 +119,6 @@ private fun String.testMessage(eventId: String, ident: String = eksternVarslingT
       "varselType": "oppgave",
       "namespace": "pto",
       "appnavn": "veilarbaktivitet",
-      "kanal": "${this}"
+      "kanal": "${this}",
+      "tidspunkt": "${LocalDateTime.now()}"
     }"""
