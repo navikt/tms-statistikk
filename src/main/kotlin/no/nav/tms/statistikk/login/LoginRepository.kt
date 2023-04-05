@@ -4,6 +4,7 @@ import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 class LoginRepository(private val database: Database) {
     fun registerLogin(ident: String) = database.updateReturningCount {
@@ -24,8 +25,8 @@ class LoginRepository(private val database: Database) {
                 """.trimIndent(),
                     mapOf(
                         "ident" to ident,
-                        "nowTime" to LocalDateTime.now(),
-                        "nowDate" to LocalDate.now()
+                        "nowTime" to LocalDateTime.now(ZoneId.of("UTC")),
+                        "nowDate" to LocalDate.now(ZoneId.of("UTC"))
                     )
                 )
             }

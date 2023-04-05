@@ -3,6 +3,7 @@ package no.nav.tms.statistikk.eksternVarsling
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import java.time.LocalDateTime
+import java.time.ZoneId
 
 
 class EksternVarslingRepository(val db: Database) {
@@ -25,7 +26,7 @@ class EksternVarslingRepository(val db: Database) {
                 mapOf(
                     "eventId" to eventId,
                     "ident" to ident,
-                    "now" to LocalDateTime.now(),
+                    "now" to LocalDateTime.now(ZoneId.of("UTC")),
                     "epost" to (kanal.erEpost()),
                     "sms" to (kanal.erSms())
                 )
