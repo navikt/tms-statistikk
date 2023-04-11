@@ -3,7 +3,6 @@ package no.nav.tms.statistikk.varsel
 import no.nav.tms.statistikk.LocalDateTimeHelper.nowAtUtc
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import java.time.LocalDateTime
-import java.time.LocalDateTime.now
 import java.util.*
 
 object VarselTestData {

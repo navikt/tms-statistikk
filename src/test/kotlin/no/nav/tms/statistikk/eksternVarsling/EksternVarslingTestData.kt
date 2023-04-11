@@ -1,6 +1,7 @@
 package no.nav.tms.statistikk.eksternVarsling
 
 import kotliquery.queryOf
+import no.nav.tms.statistikk.LocalDateTimeHelper
 import no.nav.tms.statistikk.database.Database
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -29,7 +30,7 @@ internal fun Database.getEksternVarsling(eventId: String) = list {
 internal fun Database.insertEksterntTestVarsel(
     eventId: String,
     ident: String,
-    sentTime: LocalDateTime = LocalDateTime.now(),
+    sentTime: LocalDateTime = LocalDateTimeHelper.nowAtUtc(),
     kanal: String
 ) =
     update {

@@ -6,6 +6,7 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.statistikk.LocalDateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselAktivertSink
 import no.nav.tms.statistikk.varsel.VarselRepository
 import no.nav.tms.statistikk.varsel.VarselTestData
@@ -68,7 +69,7 @@ internal class EksternVarslingSinkTest {
     fun `Plukker opp revarsling sendt`() {
         val testEvent = "23456789"
         val testIdent = "987654"
-        val previous = LocalDateTime.now().minusDays(11)
+        val previous = LocalDateTimeHelper.nowAtUtc().minusDays(11)
 
         db.insertEksterntTestVarsel(testEvent, testIdent, previous, EPOST)
 

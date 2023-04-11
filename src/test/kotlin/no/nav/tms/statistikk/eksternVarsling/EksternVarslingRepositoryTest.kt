@@ -4,11 +4,10 @@ import LocalPostgresDatabase
 import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
+import no.nav.tms.statistikk.LocalDateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.time.LocalDateTime
-import java.time.ZoneId
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EksternVarslingRepositoryTest {
@@ -23,7 +22,7 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun ` sett inn eksternt varsel`() {
-        val sendtTime = LocalDateTime.now(ZoneId.of("UTC"))
+        val sendtTime = LocalDateTimeHelper.nowAtUtc()
         repository.insertEksternVarsling("123", SMS, eksternVarslingTestIdent, sendtTime)
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -50,9 +49,9 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun `revarsling`() {
-        val lastVarselDate = LocalDateTime.now(ZoneId.of("UTC")).minusDays(7)
+        val lastVarselDate = LocalDateTimeHelper.nowAtUtc().minusDays(7)
         db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, EPOST)
-        val sendtTime = LocalDateTime.now(ZoneId.of("UTC"))
+        val sendtTime = LocalDateTimeHelper.nowAtUtc()
 
         repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent, sendtTime)
 
