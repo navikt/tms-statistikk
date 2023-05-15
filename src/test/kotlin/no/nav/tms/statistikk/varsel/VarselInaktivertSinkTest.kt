@@ -7,10 +7,12 @@ import no.nav.tms.statistikk.LocalDateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 import java.util.*
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class VarselInaktivertSinkTest {
     private val database = LocalPostgresDatabase.cleanDb()
     private val varselRepository = VarselRepository(database)
