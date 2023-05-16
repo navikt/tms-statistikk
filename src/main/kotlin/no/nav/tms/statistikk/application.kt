@@ -9,7 +9,8 @@ import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSink
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.utkast.UtkastRespository
-import no.nav.tms.statistikk.utkast.UtkastSink
+import no.nav.tms.statistikk.utkast.UtkastCreatedSink
+import no.nav.tms.statistikk.utkast.UtkastDeletedSink
 import no.nav.tms.statistikk.varsel.*
 
 fun main() {
@@ -36,7 +37,8 @@ private fun startRapid(
         VarselInaktivertSink(this, varselRepository)
         VarselPerDagSink(this, varselRepository)
         EksternVarslingSink(this, eksternVarslingRepository)
-        UtkastSink(this, utkastRespository)
+        UtkastCreatedSink(this, utkastRespository)
+        UtkastDeletedSink(this,utkastRespository)
     }.apply {
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
