@@ -14,12 +14,15 @@ class VarselInaktivertSink(
 
     init {
         River(rapidsConnection).apply {
-            validate { it.demandValue("@event_name", "inaktivert") }
-            validate { it.requireKey(
-                "eventId",
-                "kilde"
-            )}
-            validate { it.interestedIn("tidspunkt") }
+            validate {
+                it.demandValue("@event_name", "inaktivert")
+                it.rejectValue("@source", "varsel-authority")
+                it.requireKey(
+                    "eventId",
+                    "kilde"
+                )
+                it.interestedIn("tidspunkt")
+            }
         }.register(this)
     }
 

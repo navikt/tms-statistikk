@@ -12,8 +12,11 @@ class VarselPerDagSink(
 
     init {
         River(rapidsConnection).apply {
-            validate { it.demandValue("@event_name", "aktivert") }
-            validate { it.requireKey("fodselsnummer", "varselType", "forstBehandlet", "eksternVarsling") }
+            validate {
+                it.demandValue("@event_name", "aktivert")
+                it.rejectValue("@source", "varsel-authority")
+                it.requireKey("fodselsnummer", "varselType", "forstBehandlet", "eksternVarsling")
+            }
         }.register(this)
     }
 
