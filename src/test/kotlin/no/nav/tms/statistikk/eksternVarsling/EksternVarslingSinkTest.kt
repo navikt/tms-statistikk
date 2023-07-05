@@ -6,7 +6,8 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.DateTimeHelper
+import no.nav.tms.statistikk.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.VarselAktivertSink
 import no.nav.tms.statistikk.varsel.VarselRepository
 import no.nav.tms.statistikk.varsel.VarselTestData
@@ -69,7 +70,7 @@ internal class EksternVarslingSinkTest {
     fun `Plukker opp revarsling sendt`() {
         val testEvent = "23456789"
         val testIdent = "987654"
-        val previous = LocalDateTimeHelper.nowAtUtc().minusDays(11)
+        val previous = DateTimeHelper.nowAtUtc().minusDays(11)
 
         db.insertEksterntTestVarsel(testEvent, testIdent, previous, EPOST)
 
@@ -87,13 +88,13 @@ internal class EksternVarslingSinkTest {
         val eventId2 = UUID.randomUUID().toString()
         val eventId3 = UUID.randomUUID().toString()
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId1, eksternVarsling = true))
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId1, eksternVarsling = true))
         testRapid.sendTestMessage(SMS.testMessage(eventId1))
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId2, eksternVarsling = true))
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId2, eksternVarsling = true))
         testRapid.sendTestMessage(EPOST.testMessage(eventId2))
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(eventId = eventId3, eksternVarsling = true))
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId3, eksternVarsling = true))
         testRapid.sendTestMessage(EPOST.testMessage(eventId3))
         testRapid.sendTestMessage(SMS.testMessage(eventId3))
 
@@ -114,12 +115,13 @@ internal class EksternVarslingSinkTest {
 
 private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
       "@event_name": "eksternStatusOppdatert",
+      "@source": "varsel-authority",
       "ident": "$ident",
       "status": "sendt",
-      "eventId": "$eventId",
+      "varselId": "$eventId",
       "varselType": "oppgave",
       "namespace": "pto",
       "appnavn": "veilarbaktivitet",
       "kanal": "${this}",
-      "tidspunkt": "${LocalDateTime.now()}"
+      "tidspunkt": "${nowAtUtcZ()}"
     }"""

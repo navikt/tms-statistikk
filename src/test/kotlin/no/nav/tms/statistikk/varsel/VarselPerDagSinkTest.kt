@@ -5,14 +5,13 @@ import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.*
 import no.nav.tms.statistikk.varsel.VarselTestData.varselAktivertMessage
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 internal class VarselPerDagSinkTest {
 
@@ -70,12 +69,12 @@ internal class VarselPerDagSinkTest {
     fun `teller for ulike dager`() {
         val ident = "12345"
 
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc()))
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc().minusDays(1)))
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc().minusDays(1)))
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc().minusDays(2)))
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc().minusDays(2)))
-        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, forstBehandlet = LocalDateTimeHelper.nowAtUtc().minusDays(2)))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ()))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ().minusDays(1)))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ().minusDays(1)))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ().minusDays(2)))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ().minusDays(2)))
+        testRapid.sendTestMessage(varselAktivertMessage(ident, beskjed, opprettet = DateTimeHelper.nowAtUtcZ().minusDays(2)))
 
         database.antallVarsler(ident) shouldBe 6
         database.antallVarsler(ident, beskjed, LocalDate.now()) shouldBe 1

@@ -4,12 +4,11 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 import java.util.*
 
 internal class VarselAktivertSinkTest {
@@ -33,25 +32,25 @@ internal class VarselAktivertSinkTest {
         val type = beskjed
         val eventId = UUID.randomUUID().toString()
         val tekst = "abcdef"
-        val sikkerhetsnivaa = 4
+        val sensitivitet = Sensitivitet.High
         val link = "http://link"
         val namespace = "ns"
         val appnavn = "app"
-        val forstBehandlet = LocalDateTimeHelper.nowAtUtc()
+        val forstBehandlet = DateTimeHelper.nowAtUtcZ()
         val synligFremTil = null
         val eksternVarsling = true
 
         val testMessage = VarselTestData.varselAktivertMessage(
             ident = ident,
             type = type,
-            eventId = eventId,
+            varselId = eventId,
             tekst = tekst,
-            sikkerhetsnivaa = sikkerhetsnivaa,
+            sensitivitet = sensitivitet,
             link = link,
             namespace = namespace,
             appnavn = appnavn,
-            forstBehandlet = forstBehandlet,
-            synligFremTil = synligFremTil,
+            opprettet = forstBehandlet,
+            aktivFremTil = synligFremTil,
             eksternVarsling = eksternVarsling
         )
 
@@ -61,16 +60,16 @@ internal class VarselAktivertSinkTest {
 
         varsel shouldNotBe null
         varsel!!
-        varsel.eventId shouldBe eventId
+        varsel.varselId shouldBe eventId
         varsel.ident shouldBe ident
         varsel.type shouldBe beskjed.name
         varsel.namespace shouldBe namespace
         varsel.appnavn shouldBe appnavn
         varsel.tekstlengde shouldBe tekst.length
         varsel.lenke shouldBe true
-        varsel.sikkerhetsnivaa shouldBe sikkerhetsnivaa
+        varsel.sikkerhetsnivaa shouldBe sensitivitet.loginLevel
         varsel.aktiv shouldBe true
-        varsel.forstBehandlet shouldBe forstBehandlet
+        varsel.forstBehandlet shouldBe forstBehandlet.toLocalDateTime()
         varsel.frist shouldBe false
         varsel.inaktivertTidspunkt shouldBe null
         varsel.inaktivertKilde shouldBe null
@@ -84,8 +83,8 @@ internal class VarselAktivertSinkTest {
         val eventId1 = UUID.randomUUID().toString()
         val eventId2 = UUID.randomUUID().toString()
 
-        val tomLenkeVarsel = VarselTestData.varselAktivertMessage(eventId = eventId1, link = " ")
-        val varselMedLenke = VarselTestData.varselAktivertMessage(eventId = eventId2, link = "http://link")
+        val tomLenkeVarsel = VarselTestData.varselAktivertMessage(varselId = eventId1, link = " ")
+        val varselMedLenke = VarselTestData.varselAktivertMessage(varselId = eventId2, link = "http://link")
 
         testRapid.sendTestMessage(tomLenkeVarsel)
         testRapid.sendTestMessage(varselMedLenke)
@@ -99,8 +98,8 @@ internal class VarselAktivertSinkTest {
         val eventId1 = UUID.randomUUID().toString()
         val eventId2 = UUID.randomUUID().toString()
 
-        val utenFrist = VarselTestData.varselAktivertMessage(eventId = eventId1, synligFremTil = null)
-        val medFrist = VarselTestData.varselAktivertMessage(eventId = eventId2, synligFremTil = LocalDateTimeHelper.nowAtUtc())
+        val utenFrist = VarselTestData.varselAktivertMessage(varselId = eventId1, aktivFremTil = null)
+        val medFrist = VarselTestData.varselAktivertMessage(varselId = eventId2, aktivFremTil = DateTimeHelper.nowAtUtcZ())
 
         testRapid.sendTestMessage(utenFrist)
         testRapid.sendTestMessage(medFrist)

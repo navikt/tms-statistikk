@@ -1,9 +1,9 @@
 package no.nav.tms.statistikk.varsel
 
-import com.fasterxml.jackson.databind.JsonNode
 import mu.KotlinLogging
 import no.nav.helse.rapids_rivers.*
-import java.time.LocalDateTime
+import no.nav.tms.statistikk.asOptionalUtcDateTime
+import no.nav.tms.statistikk.asUtcDateTime
 
 class VarselInaktivertSink(
     rapidsConnection: RapidsConnection,
@@ -16,12 +16,12 @@ class VarselInaktivertSink(
         River(rapidsConnection).apply {
             validate {
                 it.demandValue("@event_name", "inaktivert")
-                it.rejectValue("@source", "varsel-authority")
+                it.demandValue("@source", "varsel-authority")
                 it.requireKey(
-                    "eventId",
-                    "kilde"
+                    "varselId",
+                    "kilde",
+                    "tidspunkt"
                 )
-                it.interestedIn("tidspunkt")
             }
         }.register(this)
     }
@@ -35,8 +35,8 @@ class VarselInaktivertSink(
     }
 
     private fun deserializeVarselInaktivert(json: JsonMessage) = VarselInaktivert(
-        eventId = json["eventId"].textValue(),
+        varselId = json["varselId"].textValue(),
         kilde = json["kilde"].textValue(),
-        tidspunkt = json["tidspunkt"].asOptionalLocalDateTime()
+        tidspunkt = json["tidspunkt"].asUtcDateTime()
     )
 }

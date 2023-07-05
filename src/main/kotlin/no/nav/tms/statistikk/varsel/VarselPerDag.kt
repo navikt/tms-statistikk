@@ -6,5 +6,5 @@ data class VarselPerDag(
     val ident: String,
     val type: String,
     val eksternVarsling: Boolean,
-    val forstBehandlet: LocalDateTime
+    val opprettet: LocalDateTime
 )
