@@ -4,7 +4,7 @@ import LocalPostgresDatabase
 import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -22,7 +22,7 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun ` sett inn eksternt varsel`() {
-        val sendtTime = LocalDateTimeHelper.nowAtUtc()
+        val sendtTime = DateTimeHelper.nowAtUtc()
         repository.insertEksternVarsling("123", SMS, eksternVarslingTestIdent, sendtTime)
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -49,9 +49,9 @@ class EksternVarslingRepositoryTest {
 
     @Test
     fun `revarsling`() {
-        val lastVarselDate = LocalDateTimeHelper.nowAtUtc().minusDays(7)
+        val lastVarselDate = DateTimeHelper.nowAtUtc().minusDays(7)
         db.insertEksterntTestVarsel("123", eksternVarslingTestIdent, lastVarselDate, EPOST)
-        val sendtTime = LocalDateTimeHelper.nowAtUtc()
+        val sendtTime = DateTimeHelper.nowAtUtc()
 
         repository.insertEksternVarsling("123", EPOST, eksternVarslingTestIdent, sendtTime)
 

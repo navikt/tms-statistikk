@@ -2,9 +2,10 @@ package no.nav.tms.statistikk.varsel
 
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
+import no.nav.tms.statistikk.toUtcLocalDateTime
 
 class VarselRepository(private val database: Database) {
-    fun insertVarsel(varsel: Varsel) = database.update {
+    fun insertVarsel(varsel: AktivertVarsel) = database.update {
         queryOf("""
             insert into varsel(
                 eventId,
@@ -18,11 +19,7 @@ class VarselRepository(private val database: Database) {
                 aktiv,
                 frist,
                 forstBehandlet,
-                inaktivertTidspunkt,
-                inaktivertKilde,
-                eksternVarslingBestilt,
-                eksternVarslingSendtSms,
-                eksternVarslingSendtEpost
+                eksternVarslingBestilt
             ) values (
                 :eventId,
                 :ident,
@@ -35,30 +32,22 @@ class VarselRepository(private val database: Database) {
                 :aktiv,
                 :frist,
                 :forstBehandlet,
-                :inaktivertTidspunkt,
-                :inaktivertKilde,
-                :eksternVarslingBestilt,
-                :eksternVarslingSendtSms,
-                :eksternVarslingSendtEpost
+                :eksternVarslingBestilt
             ) on conflict do nothing
         """,
             mapOf(
-                "eventId" to varsel.eventId,
+                "eventId" to varsel.varselId,
                 "ident" to varsel.ident,
                 "type" to varsel.type,
-                "namespace" to varsel.namespace,
-                "appnavn" to varsel.appnavn,
-                "tekstlengde" to varsel.tekstlengde,
-                "lenke" to varsel.lenke,
-                "sikkerhetsnivaa" to varsel.sikkerhetsnivaa,
-                "aktiv" to varsel.aktiv,
+                "namespace" to varsel.produsent.namespace,
+                "appnavn" to varsel.produsent.appnavn,
+                "tekstlengde" to varsel.tekstLengde,
+                "lenke" to varsel.harLenke,
+                "sikkerhetsnivaa" to varsel.sensitivitet.loginLevel,
+                "aktiv" to true,
                 "frist" to varsel.frist,
-                "forstBehandlet" to varsel.forstBehandlet,
-                "inaktivertTidspunkt" to varsel.inaktivertTidspunkt,
-                "inaktivertKilde" to varsel.inaktivertKilde,
-                "eksternVarslingBestilt" to varsel.eksternVarslingBestilt,
-                "eksternVarslingSendtSms" to varsel.eksternVarslingSendtSms,
-                "eksternVarslingSendtEpost" to varsel.eksternVarslingSendtEpost
+                "forstBehandlet" to varsel.opprettet.toUtcLocalDateTime(),
+                "eksternVarslingBestilt" to varsel.eksternVarslingBestilt
             )
         )
     }
@@ -69,7 +58,7 @@ class VarselRepository(private val database: Database) {
             where eventId = :eventId
         """,
             mapOf(
-                "eventId" to varselInaktivert.eventId,
+                "eventId" to varselInaktivert.varselId,
                 "tidspunkt" to varselInaktivert.tidspunkt,
                 "kilde" to varselInaktivert.kilde,
             )
@@ -83,7 +72,7 @@ class VarselRepository(private val database: Database) {
                 on conflict (dato, ident, type, ekstern_varsling) do update set antall = varsler_per_dag.antall + 1
             """,
             mapOf(
-                "dato" to varselPerDag.forstBehandlet.toLocalDate(),
+                "dato" to varselPerDag.opprettet.toLocalDate(),
                 "ident" to varselPerDag.ident,
                 "type" to varselPerDag.type,
                 "eksternVarsling" to varselPerDag.eksternVarsling

@@ -3,6 +3,7 @@ package no.nav.tms.statistikk.varsel
 import LocalPostgresDatabase
 import kotliquery.queryOf
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 fun LocalPostgresDatabase.antallVarsler(
     ident: String,
@@ -24,14 +25,14 @@ fun LocalPostgresDatabase.antallVarsler(
     } ?: 0
 }
 
-fun LocalPostgresDatabase.getVarsel(eventId: String): Varsel? = query {
+fun LocalPostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = query {
     queryOf("select * from varsel where eventId = :eventId", mapOf("eventId" to eventId))
-        .map { row -> Varsel(
-            eventId = row.string("eventId"),
+        .map { row -> DBAktivertVarsel(
+            varselId = row.string("eventId"),
             ident = row.string("ident"),
             type = row.string("type"),
             namespace = row.string("namespace") ,
-            appnavn = row.string("appnavn") ,
+            appnavn = row.string("appnavn"),
             tekstlengde = row.int("tekstlengde") ,
             lenke = row.boolean("lenke") ,
             sikkerhetsnivaa = row.int("sikkerhetsnivaa") ,
@@ -45,3 +46,22 @@ fun LocalPostgresDatabase.getVarsel(eventId: String): Varsel? = query {
             eksternVarslingSendtEpost = row.boolean("eksternVarslingSendtEpost")
         ) }.asSingle
 }
+
+data class DBAktivertVarsel(
+    val varselId: String,
+    val ident: String,
+    val type: String,
+    val namespace: String,
+    val appnavn: String,
+    val tekstlengde: Int,
+    val lenke: Boolean,
+    val sikkerhetsnivaa: Int,
+    val aktiv: Boolean,
+    val forstBehandlet: LocalDateTime,
+    val frist: Boolean,
+    val inaktivertTidspunkt: LocalDateTime?,
+    val inaktivertKilde: String?,
+    val eksternVarslingBestilt: Boolean,
+    val eksternVarslingSendtSms: Boolean,
+    val eksternVarslingSendtEpost: Boolean,
+)
