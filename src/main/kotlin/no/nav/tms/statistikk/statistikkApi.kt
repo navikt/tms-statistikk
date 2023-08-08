@@ -9,7 +9,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.statistikk.api.statistikk
@@ -23,15 +23,15 @@ fun Application.statistikkApi(
     installAuthenticatorsFunction()
 
     install(StatusPages) {
-        val logger = KotlinLogging.logger {}
+        val log = KotlinLogging.logger {}
         exception<Throwable> { call, cause ->
             when (cause) {
                 is IllegalArgumentException -> {
-                    logger.info("Bad request til statistikkApi: $cause, ${cause.message.toString()}")
+                    log.info { "Bad request til statistikkApi: $cause, ${cause.message.toString()}" }
                     call.respond(HttpStatusCode.BadRequest, cause.message ?: "")
                 }
                 else -> {
-                    logger.error("Feil i statistikkApi: $cause, ${cause.message.toString()}")
+                    log.error { "Feil i statistikkApi: $cause, ${cause.message.toString()}" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
