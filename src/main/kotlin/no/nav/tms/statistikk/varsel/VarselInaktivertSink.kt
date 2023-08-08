@@ -1,6 +1,6 @@
 package no.nav.tms.statistikk.varsel
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.helse.rapids_rivers.*
 import no.nav.tms.statistikk.asOptionalUtcDateTime
 import no.nav.tms.statistikk.asUtcDateTime
@@ -31,7 +31,7 @@ class VarselInaktivertSink(
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        log.info(problems.toString())
+        log.info { problems.toString() }
     }
 
     private fun deserializeVarselInaktivert(json: JsonMessage) = VarselInaktivert(

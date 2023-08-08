@@ -2,7 +2,7 @@ package no.nav.tms.statistikk.varsel
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.module.kotlin.readValue
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.helse.rapids_rivers.*
 import no.nav.tms.statistikk.defaultDeserializer
 
@@ -41,6 +41,6 @@ class VarselAktivertSink(
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        log.info(problems.toString())
+        log.info { problems.toString() }
     }
 }
