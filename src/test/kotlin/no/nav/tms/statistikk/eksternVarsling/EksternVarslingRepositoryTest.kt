@@ -4,7 +4,7 @@ import LocalPostgresDatabase
 import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
-import no.nav.tms.statistikk.DateTimeHelper
+import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance

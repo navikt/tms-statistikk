@@ -6,8 +6,8 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.DateTimeHelper
-import no.nav.tms.statistikk.DateTimeHelper.nowAtUtcZ
+import no.nav.tms.statistikk.database.DateTimeHelper
+import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.VarselAktivertSink
 import no.nav.tms.statistikk.varsel.VarselRepository
 import no.nav.tms.statistikk.varsel.VarselTestData
@@ -15,7 +15,6 @@ import no.nav.tms.statistikk.varsel.getVarsel
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.time.LocalDateTime
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

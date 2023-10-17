@@ -3,7 +3,7 @@ package no.nav.tms.statistikk.varsel
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.DateTimeHelper
+import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test

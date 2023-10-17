@@ -4,7 +4,7 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.DateTimeHelper
+import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll

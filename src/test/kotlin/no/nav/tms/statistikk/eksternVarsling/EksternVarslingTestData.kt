@@ -1,8 +1,8 @@
 package no.nav.tms.statistikk.eksternVarsling
 
 import kotliquery.queryOf
-import no.nav.tms.statistikk.DateTimeHelper
 import no.nav.tms.statistikk.database.Database
+import no.nav.tms.statistikk.database.DateTimeHelper
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 

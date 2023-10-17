@@ -1,6 +1,6 @@
 package no.nav.tms.statistikk.varsel
 
-import no.nav.tms.statistikk.DateTimeHelper.nowAtUtcZ
+import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import java.time.ZonedDateTime
 import java.util.*
