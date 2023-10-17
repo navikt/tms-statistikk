@@ -22,7 +22,7 @@ data class Environment(
         "KAFKA_CREDSTORE_PASSWORD" to kafkaCredstorePassword,
         "KAFKA_TRUSTSTORE_PATH" to kafkaTruststorePath,
         "KAFKA_RESET_POLICY" to "earliest",
-        "KAFKA_EXTRA_TOPIC" to "min-side.aapen-utkast-v1",
+        "KAFKA_EXTRA_TOPIC" to "min-side.aapen-utkast-v1,min-side.aapen-microfrontend-v1",
         "HTTP_PORT" to "8080"
     )
 }
