@@ -8,6 +8,8 @@ import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSink
 import no.nav.tms.statistikk.login.LoginRepository
+import no.nav.tms.statistikk.microfrontends.MicrofrontendRepository
+import no.nav.tms.statistikk.microfrontends.MicrofrontendSink
 import no.nav.tms.statistikk.utkast.UtkastRespository
 import no.nav.tms.statistikk.utkast.UtkastCreatedSink
 import no.nav.tms.statistikk.utkast.UtkastDeletedSink
@@ -39,6 +41,7 @@ private fun startRapid(
         EksternVarslingSink(this, eksternVarslingRepository)
         UtkastCreatedSink(this, utkastRespository)
         UtkastDeletedSink(this,utkastRespository)
+        MicrofrontendSink(this, MicrofrontendRepository(database))
     }.apply {
         register(object : RapidsConnection.StatusListener {
             override fun onStartup(rapidsConnection: RapidsConnection) {
