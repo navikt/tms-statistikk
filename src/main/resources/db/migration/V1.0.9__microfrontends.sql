@@ -7,5 +7,7 @@ create table if not exists microfrontends(
     initiated_by text
 );
 
+CREATE index  microfrontend_ident_idx on microfrontends(ident);
+
 
 

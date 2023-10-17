@@ -27,8 +27,7 @@ class MicrofrontendRepository(val database: Database) {
             database.update {
                 queryOf(
                     "INSERT INTO microfrontends(ident,action,initiated_time, microfrontend_id,initiated_by) " +
-                            "VALUES(:ident,:action,:initiatedTime,:microfrontendId,:initiatedBy)" +
-                            "ON CONFLICT DO NOTHING",
+                            "VALUES(:ident,:action,:initiatedTime,:microfrontendId,:initiatedBy)" ,
                     mapOf(
                         "ident" to ident,
                         "action" to action,
