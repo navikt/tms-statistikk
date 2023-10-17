@@ -12,7 +12,7 @@ internal class MicrofrontendSink(
     init {
         River(rapidsConnection).apply {
             validate { it.requireKey("@action") }
-            validate { it.interestedIn("ident", "microfrontend_id") }
+            validate { it.interestedIn("ident", "microfrontend_id","@initiated_by") }
         }.register(this)
 
     }
@@ -21,7 +21,8 @@ internal class MicrofrontendSink(
         microfrontendRepository.insertMicrofrontend(
             action=packet["@action"].asText(),
             microfrontendId = packet["microfrontend_id"].asText(),
-            ident = packet["ident"].asText()
+            ident = packet["ident"].asText(),
+            initiatedBy = packet["@initiated_by"].textValue()
         )
     }
 }
