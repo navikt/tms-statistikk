@@ -3,13 +3,11 @@ package no.nav.tms.statistikk.varsel
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.database.LocalDateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
-import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

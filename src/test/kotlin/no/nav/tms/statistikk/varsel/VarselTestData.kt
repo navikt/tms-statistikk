@@ -1,6 +1,6 @@
 package no.nav.tms.statistikk.varsel
 
-import no.nav.tms.statistikk.LocalDateTimeHelper.nowAtUtc
+import no.nav.tms.statistikk.database.LocalDateTimeHelper.nowAtUtc
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import java.time.LocalDateTime
 import java.util.*

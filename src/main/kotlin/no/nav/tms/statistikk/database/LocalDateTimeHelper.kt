@@ -1,4 +1,4 @@
-package no.nav.tms.statistikk
+package no.nav.tms.statistikk.database
 
 import java.time.LocalDateTime
 import java.time.ZoneId

@@ -4,12 +4,11 @@ import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.database.LocalDateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 import java.util.*
 
 internal class VarselAktivertSinkTest {

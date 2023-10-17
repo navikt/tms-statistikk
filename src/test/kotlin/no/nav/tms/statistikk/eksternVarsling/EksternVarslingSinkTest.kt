@@ -6,7 +6,7 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.LocalDateTimeHelper
+import no.nav.tms.statistikk.database.LocalDateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselAktivertSink
 import no.nav.tms.statistikk.varsel.VarselRepository
 import no.nav.tms.statistikk.varsel.VarselTestData
