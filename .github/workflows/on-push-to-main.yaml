@@ -7,6 +7,9 @@ on:
     paths-ignore:
       - .github/workflows/**
       - README.md
+permissions:
+  contents: write
+  packages: write
 
 jobs:
   build:
