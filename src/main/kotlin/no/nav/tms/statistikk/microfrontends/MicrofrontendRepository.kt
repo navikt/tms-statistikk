@@ -2,7 +2,6 @@ package no.nav.tms.statistikk.microfrontends
 
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
-import no.nav.tms.statistikk.database.LocalDateTimeHelper
 import java.time.LocalDateTime
 import java.time.ZoneId
 

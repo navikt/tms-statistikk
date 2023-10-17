@@ -1,7 +1,8 @@
 package no.nav.tms.statistikk.varsel
 
-import mu.KotlinLogging
+import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.helse.rapids_rivers.*
+import no.nav.tms.statistikk.asUtcDateTime
 
 class VarselPerDagSink(
     rapidsConnection: RapidsConnection,
@@ -14,8 +15,9 @@ class VarselPerDagSink(
         River(rapidsConnection).apply {
             validate {
                 it.demandValue("@event_name", "aktivert")
-                it.rejectValue("@source", "varsel-authority")
-                it.requireKey("fodselsnummer", "varselType", "forstBehandlet", "eksternVarsling")
+                it.demandValue("@source", "varsel-authority")
+                it.requireKey("ident", "type", "opprettet")
+                it.interestedIn("eksternVarslingBestilling")
             }
         }.register(this)
     }
@@ -25,13 +27,13 @@ class VarselPerDagSink(
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
-        log.info(problems.toString())
+        log.info { problems.toString() }
     }
 
     private fun deserializeVarsel(jsonMessage: JsonMessage) = VarselPerDag(
-        ident = jsonMessage["fodselsnummer"].textValue(),
-        type = jsonMessage["varselType"].textValue(),
-        eksternVarsling = jsonMessage["eksternVarsling"].booleanValue(),
-        forstBehandlet = jsonMessage["forstBehandlet"].asLocalDateTime()
+        ident = jsonMessage["ident"].textValue(),
+        type = jsonMessage["type"].textValue(),
+        eksternVarsling = jsonMessage["eksternVarslingBestilling"].isMissingOrNull().not(),
+        opprettet = jsonMessage["opprettet"].asUtcDateTime()
     )
 }

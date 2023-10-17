@@ -6,7 +6,7 @@ import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
-import no.nav.tms.statistikk.database.LocalDateTimeHelper
+import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -46,7 +46,7 @@ class MicrofrontendSinkTest {
         microfrontends.find { it.microfrontendId == "mk2" }.assert {
             require(this != null)
             ident shouldBe testFnr
-            time.truncatedTo(MINUTES) shouldBe LocalDateTimeHelper.nowAtUtcMinutes()
+            time.truncatedTo(MINUTES) shouldBe DateTimeHelper.nowAtUtcMinutes()
             action shouldBe "enable"
             initiatedBy shouldBe "testteam"
         }
@@ -96,9 +96,6 @@ class MicrofrontendSinkTest {
         testRapid.sendTestMessage(this)
     }
 }
-
-private fun LocalDateTimeHelper.nowAtUtcMinutes() = nowAtUtc().truncatedTo(MINUTES)
-
 private fun LocalPostgresDatabase.getAll() =
     list {
         queryOf("select * from microfrontends").map { row ->
