@@ -14,14 +14,6 @@ interface DependencyGroup {
     }
 }
 
-interface DittNAVCommonLibDefaults: DependencyGroup {
-    override val version get() = "2022.09.30-12.41-aa46d2d75788"
-    override val groupId get() = "com.github.navikt.dittnav-common-lib"
-
-    val influxdb get() = dependency("dittnav-common-influxdb")
-    val utils get() = dependency("dittnav-common-utils")
-}
-
 interface FlywayDefaults: DependencyGroup {
     override val groupId get() = "org.flywaydb"
     override val version get() = "9.21.1"
@@ -116,7 +108,7 @@ interface KotliQueryDefaults: DependencyGroup {
 }
 
 object KtorDefaults {
-    val version get() = "2.3.2"
+    val version get() = "2.3.5"
     val groupId get() = "io.ktor"
 
     interface ServerDefaults: DependencyGroup {
@@ -202,7 +194,7 @@ interface PrometheusDefaults: DependencyGroup {
 
 interface RapidsAndRiversDefaults: DependencyGroup {
     override val groupId get() = "com.github.navikt"
-    override val version get() = "2023080113411690890096.310ed8e5ed93"
+    override val version get() = "2023101613431697456627.0cdd93eb696f"
 
     val rapidsAndRivers get() = dependency("rapids-and-rivers")
 }
@@ -223,24 +215,24 @@ interface TestContainersDefaults: DependencyGroup {
 }
 
 interface TmsCommonLibDefaults: DependencyGroup {
-    override val groupId get() = "com.github.navikt"
-    override val version get() = "1.6.0"
+    override val groupId get() = "no.nav.tms.common"
+    override val version get() = "2.0.0"
 
-    val commonLib get() = dependency("tms-common-lib")
+    val metrics get() = dependency("metrics")
+    val observability get() = dependency("observability")
+    val utils get() = dependency("utils")
 }
 
 interface TmsKtorTokenSupportDefaults: DependencyGroup {
-    override val groupId get() = "com.github.navikt.tms-ktor-token-support"
-    override val version get() = "2.2.0"
+    override val groupId get() = "no.nav.tms.token.support"
+    override val version get() = "4.0.0"
 
-    val authenticationInstaller get() = dependency("token-support-authentication-installer")
-    val azureExchange get() = dependency("token-support-azure-exchange")
-    val azureValidation get() = dependency("token-support-azure-validation")
-    val tokenXValidation get() = dependency("token-support-tokenx-validation")
-    val authenticationInstallerMock get() = dependency("token-support-authentication-installer-mock")
-    val tokenXValidationMock get() = dependency("token-support-tokenx-validation-mock")
-    val azureValidationMock get() = dependency("token-support-azure-validation-mock")
-    val tokendingsExchange get() = dependency("token-support-tokendings-exchange")
-    val idportenSidecar get() = dependency("token-support-idporten-sidecar")
-    val idportenSidecarMock get() = dependency("token-support-idporten-sidecar-mock")
+    val azureExchange get() = dependency("azure-exchange")
+    val azureValidation get() = dependency("azure-validation")
+    val tokenXValidation get() = dependency("tokenx-validation")
+    val tokenXValidationMock get() = dependency("tokenx-validation-mock")
+    val azureValidationMock get() = dependency("azure-validation-mock")
+    val tokendingsExchange get() = dependency("tokendings-exchange")
+    val idportenSidecar get() = dependency("idporten-sidecar")
+    val idportenSidecarMock get() = dependency("idporten-sidecar-mock")
 }
