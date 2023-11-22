@@ -2,16 +2,16 @@ package no.nav.tms.statistikk
 
 import assert
 import cleanTables
-import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.auth.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
 import no.nav.tms.statistikk.login.LoginRepository
-import no.nav.tms.token.support.azure.validation.mock.installAzureAuthMock
+import no.nav.tms.token.support.azure.validation.mock.azureMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -63,18 +63,6 @@ internal class StatistikkApiTest {
     }
 
     @Test
-    fun `Csv hente-side`() = testApplication {
-        application {
-            statistikkApi(loginRepository, unauthorized)
-        }
-
-        client.get("/hent").assert {
-            status.shouldBe(HttpStatusCode.OK)
-            headers["Content-Type"] shouldBe "text/html; charset=UTF-8"
-        }
-    }
-
-    @Test
     fun `csv innlogging nedlasting`() = testApplication {
 
         loginRepository.registerLogin("1234576512")
@@ -84,31 +72,23 @@ internal class StatistikkApiTest {
         application {
             statistikkApi(loginRepository, unauthorized)
         }
+    }
 
-
-        client.get("/hent/innlogging").assert {
-            status.shouldBe(HttpStatusCode.OK)
-            headers["Content-Type"] shouldBe "text/csv"
-            headers["Content-Disposition"] shouldBe "attachment; filename=\"innlogging.csv\""
-            csvReader().readAll(bodyAsText()).apply {
-                size shouldBe 1
-                first()[0] shouldBe "Innlogging etter ekstern varsling"
-                first()[1].toInt() shouldBe 3
+    private val authorized: Application.() -> Unit = {
+        authentication {
+            azureMock {
+                setAsDefault = true
+                alwaysAuthenticated = true
             }
         }
     }
 
-    private val authorized: Application.() -> Unit = {
-        installAzureAuthMock {
-            setAsDefault = true
-            alwaysAuthenticated = true
-        }
-    }
-
     private val unauthorized: Application.() -> Unit = {
-        installAzureAuthMock {
-            setAsDefault = true
-            alwaysAuthenticated = false
+        authentication {
+            azureMock {
+                setAsDefault = true
+                alwaysAuthenticated = false
+            }
         }
     }
 }
