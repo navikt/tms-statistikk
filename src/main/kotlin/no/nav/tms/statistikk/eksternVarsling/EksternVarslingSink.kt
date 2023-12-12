@@ -17,7 +17,6 @@ class EksternVarslingSink(
         River(rapidsConnection).apply {
             validate {
                 it.demandValue("@event_name", "eksternStatusOppdatert")
-                it.demandValue("@source", "varsel-authority")
                 it.demandValue("status", "sendt")
                 it.requireKey("kanal", "varselId", "ident", "tidspunkt")
             }

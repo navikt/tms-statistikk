@@ -15,7 +15,6 @@ class VarselPerDagSink(
         River(rapidsConnection).apply {
             validate {
                 it.demandValue("@event_name", "aktivert")
-                it.demandValue("@source", "varsel-authority")
                 it.requireKey("ident", "type", "opprettet")
                 it.interestedIn("eksternVarslingBestilling")
             }

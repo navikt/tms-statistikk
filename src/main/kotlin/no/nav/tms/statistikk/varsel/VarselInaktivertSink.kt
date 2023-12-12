@@ -16,7 +16,6 @@ class VarselInaktivertSink(
         River(rapidsConnection).apply {
             validate {
                 it.demandValue("@event_name", "inaktivert")
-                it.demandValue("@source", "varsel-authority")
                 it.requireKey(
                     "varselId",
                     "kilde",

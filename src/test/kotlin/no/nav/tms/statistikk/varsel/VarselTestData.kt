@@ -25,7 +25,6 @@ object VarselTestData {
     = """
         {
             "@event_name": "aktivert",
-            "@source": "varsel-authority",
             "ident": "$ident",
             "type": "${type.name}",
             ${if (eksternVarsling) {
@@ -61,7 +60,6 @@ object VarselTestData {
     = """
         {
             "@event_name": "inaktivert",
-            "@source": "varsel-authority",
             "varselId": "$varselId",
             "varselType": "${type.name}",
             "namespace": "$namespace",
@@ -82,7 +80,6 @@ object VarselTestData {
     = """
        {
             "@event_name": "eksternStatusOppdatert",
-            "@source": "varsel-authority",
             "status": "sendt",
             "varselId": "$varselId",
             "kanal": "$kanal",

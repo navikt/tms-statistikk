@@ -114,7 +114,6 @@ internal class EksternVarslingSinkTest {
 
 private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
       "@event_name": "eksternStatusOppdatert",
-      "@source": "varsel-authority",
       "ident": "$ident",
       "status": "sendt",
       "varselId": "$eventId",
