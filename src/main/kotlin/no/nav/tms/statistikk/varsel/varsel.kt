@@ -15,15 +15,27 @@ data class AktivertVarsel(
     val opprettet: ZonedDateTime,
     val aktivFremTil: ZonedDateTime? = null
 ) {
-    val tekstLengde get() = innhold.tekst.length
+    val tekstLengde get() = innhold.defaultTekst().tekst.length
     val harLenke get() = innhold.link.isNullOrBlank().not()
     val frist get() = aktivFremTil != null
     val eksternVarslingBestilt get() = eksternVarslingBestilling != null
 }
 
 data class Innhold(
-    val tekst: String,
+    val tekster: List<Tekst>,
     val link: String?
+) {
+    fun defaultTekst() = when {
+        tekster.size == 1 -> tekster.first()
+        tekster.size > 1 -> tekster.first { it.default }
+        else -> throw IllegalArgumentException("Må ha minst 1 default tekst")
+    }
+}
+
+data class Tekst(
+    val tekst: String,
+    val spraakkode: String,
+    val default: Boolean
 )
 
 enum class Sensitivitet(val loginLevel: Int) {

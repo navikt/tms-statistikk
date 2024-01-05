@@ -14,6 +14,7 @@ object VarselTestData {
         varselId: String = UUID.randomUUID().toString(),
         eksternVarsling: Boolean = false,
         opprettet: ZonedDateTime = nowAtUtcZ(),
+        cluster: String = "cluster",
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         tekst: String = "tekst",
@@ -24,7 +25,7 @@ object VarselTestData {
     )
     = """
         {
-            "@event_name": "aktivert",
+            "@event_name": "opprettet",
             "ident": "$ident",
             "type": "${type.name}",
             ${if (eksternVarsling) {
@@ -36,11 +37,23 @@ object VarselTestData {
             "opprettet": "$opprettet",
             "varselId": "$varselId",
             "produsent": {
+                "cluster": "$cluster",
                 "namespace": "$namespace",
                 "appnavn": "$appnavn"
             },
             "innhold": {
-                "tekst": "$tekst",
+                "tekster": [ 
+                    {
+                        "tekst": "$tekst",
+                        "spraakkode": "nb",
+                        "default": true
+                    },
+                    {
+                        "tekst": "Annen tekst",
+                        "spraakkode": "en",
+                        "default": false
+                    }
+                 ],
                 "link": "$link"
             },
             "sensitivitet": "${sensitivitet.lowercaseName}",
@@ -52,6 +65,7 @@ object VarselTestData {
     fun varselInaktivertMessage(
         type: VarselType = beskjed,
         varselId: String = UUID.randomUUID().toString(),
+        cluster: String = "cluster",
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         kilde: String = "produsent",
@@ -61,18 +75,22 @@ object VarselTestData {
         {
             "@event_name": "inaktivert",
             "varselId": "$varselId",
-            "varselType": "${type.name}",
-            "namespace": "$namespace",
-            "appnavn": "$appnavn",
+            "varseltype": "${type.name}",
+            "produsent": {
+                "cluster": "$cluster",
+                "namespace": "$namespace",
+                "appnavn": "$appnavn"                        
+            },
             "kilde": "$kilde",
             "tidspunkt": "$tidspunkt"
         }
     """
 
     fun eksternVarslingSendt(
-        varselType: VarselType = beskjed,
+        varseltype: VarselType = beskjed,
         varselId: String = UUID.randomUUID().toString(),
         kanal: String = "SMS",
+        cluster: String = "cluster",
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         tidspunkt: ZonedDateTime = nowAtUtcZ()
@@ -83,9 +101,12 @@ object VarselTestData {
             "status": "sendt",
             "varselId": "$varselId",
             "kanal": "$kanal",
-            "varselType": "${varselType.name}",
-            "namespace": "$namespace",
-            "appnavn": "$appnavn",
+            "varseltype": "${varseltype.name}",
+            "produsent": {
+                "cluster": "$cluster",
+                "namespace": "$namespace",
+                "appnavn": "$appnavn"                        
+            },
             "tidspunkt": "$tidspunkt"
        }
     """
