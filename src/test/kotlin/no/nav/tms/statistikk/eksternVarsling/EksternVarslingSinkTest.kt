@@ -113,13 +113,16 @@ internal class EksternVarslingSinkTest {
 
 
 private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
-      "@event_name": "eksternStatusOppdatert",
-      "ident": "$ident",
-      "status": "sendt",
-      "varselId": "$eventId",
-      "varselType": "oppgave",
-      "namespace": "pto",
-      "appnavn": "veilarbaktivitet",
-      "kanal": "${this}",
-      "tidspunkt": "${nowAtUtcZ()}"
-    }"""
+    "@event_name": "eksternStatusOppdatert",
+    "ident": "$ident",
+    "status": "sendt",
+    "varselId": "$eventId",
+    "varseltype": "oppgave",
+    "produsent": {
+        "cluster": "dev-gcp",
+        "namespace": "pto",
+        "appnavn": "veilarbaktivitet"                        
+    },
+    "kanal": "${this}",
+    "tidspunkt": "${nowAtUtcZ()}"
+}"""
