@@ -42,7 +42,18 @@ object VarselTestData {
                 "appnavn": "$appnavn"
             },
             "innhold": {
-                "tekst": "$tekst",
+                "tekster": [ 
+                    {
+                        "tekst": "$tekst",
+                        "spraakkode": "nb",
+                        "default": true
+                    },
+                    {
+                        "tekst": "Annen tekst",
+                        "spraakkode": "en",
+                        "default": false
+                    }
+                 ],
                 "link": "$link"
             },
             "sensitivitet": "${sensitivitet.lowercaseName}",
