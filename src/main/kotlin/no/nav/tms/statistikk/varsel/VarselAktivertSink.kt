@@ -8,7 +8,7 @@ import no.nav.tms.statistikk.defaultDeserializer
 class VarselAktivertSink(
     rapidsConnection: RapidsConnection,
     private val repository: VarselRepository
-): River.PacketListener {
+) : River.PacketListener {
 
     private val log = KotlinLogging.logger {}
 
@@ -27,15 +27,17 @@ class VarselAktivertSink(
                     "innhold",
                     "sensitivitet"
                 )
-                it.interestedIn("aktivFremTil","eksternVarslingBestilling")
+                it.interestedIn("aktivFremTil", "eksternVarslingBestilling", "metadata")
             }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktivertVarsel: AktivertVarsel = objectMapper.readValue(packet.toJson())
-
         repository.insertVarsel(aktivertVarsel)
+        packet["metadata"].takeIf { !it.isMissingNode }?.let {
+            repository.insertBeredskapVarsel(aktivertVarsel.varselId, it["beredskap_tittel"].asText())
+        }
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {

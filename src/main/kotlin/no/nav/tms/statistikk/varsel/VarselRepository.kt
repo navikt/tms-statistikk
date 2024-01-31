@@ -6,7 +6,8 @@ import no.nav.tms.statistikk.toUtcLocalDateTime
 
 class VarselRepository(private val database: Database) {
     fun insertVarsel(varsel: AktivertVarsel) = database.update {
-        queryOf("""
+        queryOf(
+            """
             insert into varsel(
                 eventId,
                 ident,
@@ -53,7 +54,8 @@ class VarselRepository(private val database: Database) {
     }
 
     fun updateVarsel(varselInaktivert: VarselInaktivert) = database.update {
-        queryOf("""
+        queryOf(
+            """
             update varsel set aktiv = false, inaktivertTidspunkt = :tidspunkt, inaktivertKilde = :kilde
             where eventId = :eventId
         """,
@@ -66,7 +68,8 @@ class VarselRepository(private val database: Database) {
     }
 
     fun registerVarselPerDag(varselPerDag: VarselPerDag) = database.update {
-            queryOf("""
+        queryOf(
+            """
                 insert into varsler_per_dag(dato, ident, type, ekstern_varsling, antall)
                     values(:dato, :ident, :type, :eksternVarsling, 1)
                 on conflict (dato, ident, type, ekstern_varsling) do update set antall = varsler_per_dag.antall + 1
@@ -76,6 +79,19 @@ class VarselRepository(private val database: Database) {
                 "ident" to varselPerDag.ident,
                 "type" to varselPerDag.type,
                 "eksternVarsling" to varselPerDag.eksternVarsling
+            )
+        )
+    }
+
+    fun insertBeredskapVarsel(varselId: String, tittel: String?) = database.update {
+        queryOf(
+            """
+               insert into beredskapsvarsel (varselId,beredskap_tittel)
+               values(:varselId, :tittel)
+           """.trimIndent(),
+            mapOf(
+                "varselId" to varselId,
+                "tittel" to tittel
             )
         )
     }

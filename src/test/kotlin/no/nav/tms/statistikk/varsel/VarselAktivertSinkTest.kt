@@ -1,11 +1,13 @@
 package no.nav.tms.statistikk.varsel
 
+import assert
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
+import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapTittel
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -23,6 +25,7 @@ internal class VarselAktivertSinkTest {
 
     @AfterEach
     fun cleanDb() {
+        database.update { queryOf("delete from beredskapsvarsel") }
         database.update { queryOf("delete from varsel") }
     }
 
@@ -94,12 +97,36 @@ internal class VarselAktivertSinkTest {
     }
 
     @Test
+    fun `lagrer beredskapstittel`() {
+        val eventId1 = UUID.randomUUID().toString()
+        val eventId2 = UUID.randomUUID().toString()
+
+        val medBeredskapsTittel =
+            VarselTestData.varselAktivertMessage(varselId = eventId1).addBeredskapTittel("Something happened")
+        val utenBeredskapsTittel = VarselTestData.varselAktivertMessage(varselId = eventId2)
+
+        testRapid.sendTestMessage(utenBeredskapsTittel)
+        testRapid.sendTestMessage(medBeredskapsTittel)
+
+        database.getVarsel(eventId2).assert {
+            require(this != null)
+            beredskapstittel shouldBe null
+        }
+
+        database.getVarsel(eventId1).assert {
+            require(this != null)
+            beredskapstittel shouldBe "Something happened"
+        }
+    }
+
+    @Test
     fun `tolker frist riktig`() {
         val eventId1 = UUID.randomUUID().toString()
         val eventId2 = UUID.randomUUID().toString()
 
         val utenFrist = VarselTestData.varselAktivertMessage(varselId = eventId1, aktivFremTil = null)
-        val medFrist = VarselTestData.varselAktivertMessage(varselId = eventId2, aktivFremTil = DateTimeHelper.nowAtUtcZ())
+        val medFrist =
+            VarselTestData.varselAktivertMessage(varselId = eventId2, aktivFremTil = DateTimeHelper.nowAtUtcZ())
 
         testRapid.sendTestMessage(utenFrist)
         testRapid.sendTestMessage(medFrist)

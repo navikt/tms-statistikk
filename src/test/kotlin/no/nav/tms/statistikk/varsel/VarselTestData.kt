@@ -22,18 +22,18 @@ object VarselTestData {
         sensitivitet: Sensitivitet = Sensitivitet.Substantial,
         sistOppdatert: ZonedDateTime = nowAtUtcZ(),
         aktivFremTil: ZonedDateTime? = nowAtUtcZ().plusWeeks(2),
-    )
-    = """
+    ) = """
         {
             "@event_name": "opprettet",
             "ident": "$ident",
             "type": "${type.name}",
-            ${if (eksternVarsling) {
-                    """"eksternVarslingBestilling": { "prefererteKanaler": [] },"""
-                } else {
-                    ""
-                }
-            }
+            ${
+        if (eksternVarsling) {
+            """"eksternVarslingBestilling": { "prefererteKanaler": [] },"""
+        } else {
+            ""
+        }
+    }
             "opprettet": "$opprettet",
             "varselId": "$varselId",
             "produsent": {
@@ -62,6 +62,17 @@ object VarselTestData {
         }
     """
 
+    internal fun String.addBeredskapTittel(beredskapTittel: String) =
+        this.substring(0, lastIndexOf("}")).let {
+            """$it,                    
+            "metadata": {
+              "beredskap_tittel": "$beredskapTittel"
+              }    
+            }
+                """.trimMargin()
+        }
+
+
     fun varselInaktivertMessage(
         type: VarselType = beskjed,
         varselId: String = UUID.randomUUID().toString(),
@@ -70,8 +81,7 @@ object VarselTestData {
         appnavn: String = "appnavn",
         kilde: String = "produsent",
         tidspunkt: ZonedDateTime = nowAtUtcZ()
-    )
-    = """
+    ) = """
         {
             "@event_name": "inaktivert",
             "varselId": "$varselId",
@@ -94,8 +104,7 @@ object VarselTestData {
         namespace: String = "namespace",
         appnavn: String = "appnavn",
         tidspunkt: ZonedDateTime = nowAtUtcZ()
-    )
-    = """
+    ) = """
        {
             "@event_name": "eksternStatusOppdatert",
             "status": "sendt",
