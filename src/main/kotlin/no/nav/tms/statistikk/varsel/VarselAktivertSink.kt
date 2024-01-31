@@ -35,8 +35,10 @@ class VarselAktivertSink(
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktivertVarsel: AktivertVarsel = objectMapper.readValue(packet.toJson())
         repository.insertVarsel(aktivertVarsel)
-        packet["metadata"].takeIf { !it.isMissingNode }?.let {
-            repository.insertBeredskapVarsel(aktivertVarsel.varselId, it["beredskap_tittel"].asText())
+        packet["metadata"].takeIf { !it.isMissingNode }?.let { metadata ->
+            metadata.findValue("beredskap_tittel")?.let { tittel ->
+                repository.insertBeredskapVarsel(aktivertVarsel.varselId, tittel.asText())
+            }
         }
     }
 
