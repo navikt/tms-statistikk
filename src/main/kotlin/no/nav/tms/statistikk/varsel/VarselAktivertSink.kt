@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.helse.rapids_rivers.*
 import no.nav.tms.statistikk.defaultDeserializer
+import no.nav.tms.statistikk.varsel.BeredskapMetadata.Companion.beredskapMetadata
 
 class VarselAktivertSink(
     rapidsConnection: RapidsConnection,
@@ -35,12 +36,30 @@ class VarselAktivertSink(
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val aktivertVarsel: AktivertVarsel = objectMapper.readValue(packet.toJson())
         repository.insertVarsel(aktivertVarsel)
-        packet["metadata"].findValue("beredskap_tittel")?.let { tittel ->
-            repository.insertBeredskapVarsel(aktivertVarsel.varselId, tittel.asText())
+        packet.beredskapMetadata()?.let {
+            repository.insertBeredskapReference(it, packet["varselId"].asText())
         }
     }
 
     override fun onError(problems: MessageProblems, context: MessageContext) {
         log.info { problems.toString() }
+    }
+}
+
+class BeredskapMetadata private constructor(
+    val tittel: String?,
+    val ref: String?
+) {
+    val isEmpty = tittel == null && ref == null
+
+    companion object {
+        fun JsonMessage.beredskapMetadata() = BeredskapMetadata(
+            this["metadata"].findValue("beredskap_tittel")?.asText(),
+            this["metadata"].findValue("beredskap_ref")?.asText()
+        ).let {
+            if (it.isEmpty)
+                null
+            else it
+        }
     }
 }

@@ -7,7 +7,7 @@ import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
-import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapTittel
+import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapMetadata
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -97,12 +97,12 @@ internal class VarselAktivertSinkTest {
     }
 
     @Test
-    fun `lagrer beredskapstittel`() {
+    fun `lagrer beredskapmetadata`() {
         val eventId1 = UUID.randomUUID().toString()
         val eventId2 = UUID.randomUUID().toString()
 
         val medBeredskapsTittel =
-            VarselTestData.varselAktivertMessage(varselId = eventId1).addBeredskapTittel("Something happened")
+            VarselTestData.varselAktivertMessage(varselId = eventId1).addBeredskapMetadata("Something happened")
         val utenBeredskapsTittel = VarselTestData.varselAktivertMessage(varselId = eventId2)
 
         testRapid.sendTestMessage(utenBeredskapsTittel)
@@ -116,6 +116,7 @@ internal class VarselAktivertSinkTest {
         database.getVarsel(eventId1).assert {
             require(this != null)
             beredskapstittel shouldBe "Something happened"
+            beredskapsRef shouldBe "123"
         }
     }
 

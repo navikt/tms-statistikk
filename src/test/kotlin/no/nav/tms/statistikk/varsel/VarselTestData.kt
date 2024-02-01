@@ -62,11 +62,12 @@ object VarselTestData {
         }
     """
 
-    internal fun String.addBeredskapTittel(beredskapTittel: String) =
+    internal fun String.addBeredskapMetadata(beredskapTittel: String, beredskapRef:String = "123") =
         this.substring(0, lastIndexOf("}")).let {
             """$it,                    
             "metadata": {
-              "beredskap_tittel": "$beredskapTittel"
+              "beredskap_tittel": "$beredskapTittel",
+              "beredskap_ref": "$beredskapRef"
               }    
             }
                 """.trimMargin()

@@ -26,10 +26,12 @@ fun LocalPostgresDatabase.antallVarsler(
 }
 
 fun LocalPostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = query {
-    queryOf("""select v.*, b.beredskap_tittel 
+    queryOf(
+        """select v.*, b.beredskap_tittel, b.beredskap_ref 
         |from varsel as v 
-        |left join beredskapsvarsel as b on b.varselId=v.eventId
-        |where eventId = :eventId""".trimMargin(), mapOf("eventId" to eventId))
+        |left join beredskapsvarsel as b on b.beredskap_ref=v.beredskap_ref
+        |where eventId = :eventId""".trimMargin(), mapOf("eventId" to eventId)
+    )
         .map { row ->
             DBAktivertVarsel(
                 varselId = row.string("eventId"),
@@ -48,7 +50,8 @@ fun LocalPostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = query 
                 eksternVarslingBestilt = row.boolean("eksternVarslingBestilt"),
                 eksternVarslingSendtSms = row.boolean("eksternVarslingSendtSms"),
                 eksternVarslingSendtEpost = row.boolean("eksternVarslingSendtEpost"),
-                beredskapstittel = row.stringOrNull("beredskap_tittel")
+                beredskapstittel = row.stringOrNull("beredskap_tittel"),
+                beredskapsRef = row.stringOrNull("beredskap_ref")
             )
         }.asSingle
 }
@@ -70,5 +73,8 @@ data class DBAktivertVarsel(
     val eksternVarslingBestilt: Boolean,
     val eksternVarslingSendtSms: Boolean,
     val eksternVarslingSendtEpost: Boolean,
-    val beredskapstittel: String?
-)
+    val beredskapstittel: String?,
+    val beredskapsRef: String?
+) {
+
+}

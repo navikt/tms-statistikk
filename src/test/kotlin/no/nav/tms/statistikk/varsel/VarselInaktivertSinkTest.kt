@@ -4,7 +4,7 @@ import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.tms.statistikk.database.DateTimeHelper
-import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapTittel
+import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapMetadata
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
@@ -35,7 +35,7 @@ internal class VarselInaktivertSinkTest {
         val kilde = "bruker"
         val inaktivertTidspunkt = DateTimeHelper.nowAtUtcZ().minusHours(1)
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId).addBeredskapTittel("oups"))
+        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId).addBeredskapMetadata("oups"))
         testRapid.sendTestMessage(
             VarselTestData.varselInaktivertMessage(
                 varselId = eventId,
@@ -50,5 +50,6 @@ internal class VarselInaktivertSinkTest {
         varsel.inaktivertTidspunkt shouldBe inaktivertTidspunkt.toLocalDateTime()
         varsel.inaktivertKilde shouldBe kilde
         varsel.beredskapstittel shouldBe "oups"
+        varsel.beredskapsRef shouldBe "123"
     }
 }

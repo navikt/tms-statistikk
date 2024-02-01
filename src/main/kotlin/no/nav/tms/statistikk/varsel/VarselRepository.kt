@@ -5,9 +5,10 @@ import no.nav.tms.statistikk.database.Database
 import no.nav.tms.statistikk.toUtcLocalDateTime
 
 class VarselRepository(private val database: Database) {
-    fun insertVarsel(varsel: AktivertVarsel) = database.update {
-        queryOf(
-            """
+    fun insertVarsel(varsel: AktivertVarsel) {
+        database.update {
+            queryOf(
+                """
             insert into varsel(
                 eventId,
                 ident,
@@ -36,21 +37,22 @@ class VarselRepository(private val database: Database) {
                 :eksternVarslingBestilt
             ) on conflict do nothing
         """,
-            mapOf(
-                "eventId" to varsel.varselId,
-                "ident" to varsel.ident,
-                "type" to varsel.type,
-                "namespace" to varsel.produsent.namespace,
-                "appnavn" to varsel.produsent.appnavn,
-                "tekstlengde" to varsel.tekstLengde,
-                "lenke" to varsel.harLenke,
-                "sikkerhetsnivaa" to varsel.sensitivitet.loginLevel,
-                "aktiv" to true,
-                "frist" to varsel.frist,
-                "forstBehandlet" to varsel.opprettet.toUtcLocalDateTime(),
-                "eksternVarslingBestilt" to varsel.eksternVarslingBestilt
+                mapOf(
+                    "eventId" to varsel.varselId,
+                    "ident" to varsel.ident,
+                    "type" to varsel.type,
+                    "namespace" to varsel.produsent.namespace,
+                    "appnavn" to varsel.produsent.appnavn,
+                    "tekstlengde" to varsel.tekstLengde,
+                    "lenke" to varsel.harLenke,
+                    "sikkerhetsnivaa" to varsel.sensitivitet.loginLevel,
+                    "aktiv" to true,
+                    "frist" to varsel.frist,
+                    "forstBehandlet" to varsel.opprettet.toUtcLocalDateTime(),
+                    "eksternVarslingBestilt" to varsel.eksternVarslingBestilt
+                )
             )
-        )
+        }
     }
 
     fun updateVarsel(varselInaktivert: VarselInaktivert) = database.update {
@@ -83,16 +85,31 @@ class VarselRepository(private val database: Database) {
         )
     }
 
-    fun insertBeredskapVarsel(varselId: String, tittel: String?) = database.update {
-        queryOf(
-            """
-               insert into beredskapsvarsel (varselId,beredskap_tittel)
-               values(:varselId, :tittel)
+    fun insertBeredskapReference(beredskapMetadata: BeredskapMetadata, varselId: String) {
+        database.update {
+            queryOf(
+                """
+               insert into beredskapsvarsel (beredskap_ref,beredskap_tittel)
+               values(:ref, :tittel)
+               on conflict do nothing
            """.trimIndent(),
-            mapOf(
-                "varselId" to varselId,
-                "tittel" to tittel
+                mapOf(
+                    "ref" to beredskapMetadata.ref,
+                    "tittel" to beredskapMetadata.tittel
+                )
             )
-        )
+        }
+
+        database.update {
+            queryOf(
+                """update varsel set beredskap_ref=:ref 
+                |where eventId = :varselId""".trimMargin(),
+                mapOf(
+                    "ref" to beredskapMetadata.ref,
+                    "varselId" to varselId
+                )
+            )
+        }
+
     }
 }
