@@ -13,7 +13,7 @@ data class AktivertVarsel(
     val produsent: Produsent,
     val eksternVarslingBestilling: EksternVarslingBestilling? = null,
     val opprettet: ZonedDateTime,
-    val aktivFremTil: ZonedDateTime? = null
+    val aktivFremTil: ZonedDateTime? = null,
 ) {
     val tekstLengde get() = innhold.defaultTekst().tekst.length
     val harLenke get() = innhold.link.isNullOrBlank().not()

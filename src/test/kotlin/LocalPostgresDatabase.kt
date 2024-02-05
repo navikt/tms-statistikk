@@ -17,7 +17,9 @@ class LocalPostgresDatabase private constructor() : Database {
         }
 
         fun cleanDb(): LocalPostgresDatabase {
+
             instance.cleanTables(
+                "beredskapsvarsel",
                 "varsel",
                 "microfrontends",
                 "utkast",
