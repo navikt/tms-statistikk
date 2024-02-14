@@ -55,7 +55,6 @@ spec:
         cascadingDelete: false
   resources:
     limits:
-      cpu: "1"
       memory: 1024Mi
     requests:
       cpu: "20m"
