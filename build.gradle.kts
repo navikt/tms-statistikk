@@ -1,25 +1,21 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    // Apply the Kotlin JVM plugin to add support for Kotlin on the JVM.
     kotlin("jvm").version(Kotlin.version)
-    kotlin("plugin.allopen").version(Kotlin.version)
 
-    id(Flyway.pluginId) version (Flyway.version)
     id(Shadow.pluginId) version (Shadow.version)
 
-    // Apply the application plugin to add support for building a CLI application.
     application
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
 }
 
 repositories {
     mavenCentral()
-    maven("https://packages.confluent.io/maven")
     maven {
         url = uri("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
     }
@@ -66,9 +62,4 @@ tasks {
             events("passed", "skipped", "failed")
         }
     }
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
