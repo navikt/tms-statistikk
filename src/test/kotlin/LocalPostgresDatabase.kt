@@ -56,7 +56,7 @@ class LocalPostgresDatabase private constructor() : Database {
     }
 }
 
-internal fun Database.cleanTables(vararg tables: String) {
+fun Database.cleanTables(vararg tables: String) {
     tables.forEach { table ->
         update {
             queryOf("delete from $table")
@@ -64,7 +64,7 @@ internal fun Database.cleanTables(vararg tables: String) {
     }
 }
 
-internal inline fun <T> T.assert(block: T.() -> Unit): T =
+inline fun <T> T.assert(block: T.() -> Unit): T =
     apply {
         block()
     }
