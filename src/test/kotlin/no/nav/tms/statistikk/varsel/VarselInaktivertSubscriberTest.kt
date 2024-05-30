@@ -2,7 +2,7 @@ package no.nav.tms.statistikk.varsel
 
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapMetadata
 import org.junit.jupiter.api.AfterEach
@@ -12,16 +12,14 @@ import org.junit.jupiter.api.TestInstance
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class VarselInaktivertSinkTest {
+class VarselInaktivertSubscriberTest {
     private val database = LocalPostgresDatabase.cleanDb()
     private val varselRepository = VarselRepository(database)
-    private val testRapid = TestRapid()
 
-    @BeforeAll
-    fun setupSinks() {
-        VarselAktivertSink(testRapid, varselRepository)
-        VarselInaktivertSink(testRapid, varselRepository)
-    }
+    private val broadcaster = MessageBroadcaster(listOf(
+        VarselAktivertSubscriber(varselRepository),
+        VarselInaktivertSubscriber(varselRepository)
+    ))
 
     @AfterEach
     fun cleanDb() {
@@ -35,8 +33,8 @@ internal class VarselInaktivertSinkTest {
         val kilde = "bruker"
         val inaktivertTidspunkt = DateTimeHelper.nowAtUtcZ().minusHours(1)
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId).addBeredskapMetadata("oups"))
-        testRapid.sendTestMessage(
+        broadcaster.broadcastJson(VarselTestData.varselAktivertMessage(varselId = eventId).addBeredskapMetadata("oups"))
+        broadcaster.broadcastJson(
             VarselTestData.varselInaktivertMessage(
                 varselId = eventId,
                 kilde = kilde,

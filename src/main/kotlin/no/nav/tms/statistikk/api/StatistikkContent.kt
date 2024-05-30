@@ -25,7 +25,7 @@ fun HTML.buildStats() {
     }
 }
 
-internal fun OutputStream.writeInnloggingCSV(innlogingPerDag: Int) =
+fun OutputStream.writeInnloggingCSV(innlogingPerDag: Int) =
     bufferedWriter().apply {
         write("""Innlogging etter ekstern varsling,$innlogingPerDag""")
         flush()

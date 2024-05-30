@@ -5,7 +5,7 @@ import assert
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -15,17 +15,18 @@ import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit.MINUTES
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class MicrofrontendSinkTest {
+class MicrofrontendSubscriberTest {
     private val database = LocalPostgresDatabase.cleanDb()
-    private val testRapid = TestRapid()
     private val testFnr = "12345678910"
+
+    private val broadcaster = MessageBroadcaster(
+        listOf(MicrofrontendSubscriber(MicrofrontendRepository(database))),
+        eventNameFields = listOf("@action")
+    )
 
     @BeforeAll
     fun setup() {
-        MicrofrontendSink(
-            testRapid,
-            MicrofrontendRepository(database)
-        )
+
     }
 
     @AfterEach
@@ -93,7 +94,7 @@ class MicrofrontendSinkTest {
     }
 
     private fun String.send() {
-        testRapid.sendTestMessage(this)
+        broadcaster.broadcastJson(this)
     }
 }
 private fun LocalPostgresDatabase.getAll() =

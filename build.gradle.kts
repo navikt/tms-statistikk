@@ -25,6 +25,8 @@ repositories {
 dependencies {
     implementation(Flyway.core)
     implementation(Hikari.cp)
+    implementation(JacksonDatatype.datatypeJsr310)
+    implementation(JacksonDatatype.moduleKotlin)
     implementation(KotlinLogging.logging)
     implementation(Ktor.Server.core)
     implementation(Ktor.Server.netty)
@@ -34,11 +36,12 @@ dependencies {
     implementation(Ktor.Server.statusPages)
     implementation(Ktor.Serialization.jackson)
     implementation(KtorHtml.htmlBuilder)
+    implementation(Micrometer.registryPrometheus)
     implementation(TmsCommonLib.utils)
     implementation(TmsKtorTokenSupport.azureValidation)
     implementation(Postgresql.postgresql)
-    implementation(RapidsAndRivers.rapidsAndRivers)
     implementation(KotliQuery.kotliquery)
+    implementation(TmsKafkaTools.kafkaApplication)
 
     testImplementation(Junit.api)
     testImplementation(Junit.engine)

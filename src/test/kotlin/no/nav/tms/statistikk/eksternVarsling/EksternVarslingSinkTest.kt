@@ -5,30 +5,25 @@ import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
-import no.nav.tms.statistikk.varsel.VarselAktivertSink
-import no.nav.tms.statistikk.varsel.VarselRepository
-import no.nav.tms.statistikk.varsel.VarselTestData
-import no.nav.tms.statistikk.varsel.getVarsel
+import no.nav.tms.statistikk.varsel.*
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class EksternVarslingSinkTest {
+class EksternVarslingSinkTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
-    private val testRapid = TestRapid()
     private val varselRepository = VarselRepository(db)
 
-    init {
-        EksternVarslingSink(testRapid, EksternVarslingRepository(db))
-        VarselAktivertSink(testRapid, varselRepository)
-    }
-
+    private val broadcaster = MessageBroadcaster(listOf(
+        EksternVarslingSubscriber(EksternVarslingRepository(db)),
+        VarselAktivertSubscriber(varselRepository)
+    ))
 
     @AfterEach
     fun cleanup() {
@@ -37,8 +32,8 @@ internal class EksternVarslingSinkTest {
 
     @Test
     fun `Plukker opp ekstern varsling sendt`() {
-        testRapid.sendTestMessage(SMS.testMessage("123"))
-        testRapid.sendTestMessage(EPOST.testMessage("124"))
+        broadcaster.broadcastJson(SMS.testMessage("123"))
+        broadcaster.broadcastJson(EPOST.testMessage("124"))
 
         db.getEksternVarsling("123").first() shouldNotBe null
         db.getEksternVarsling("124").first() shouldNotBe null
@@ -46,16 +41,16 @@ internal class EksternVarslingSinkTest {
 
     @Test
     fun `Oppdaterer varslingskanaler`() {
-        testRapid.sendTestMessage(SMS.testMessage("123"))
-        testRapid.sendTestMessage(EPOST.testMessage("123"))
+        broadcaster.broadcastJson(SMS.testMessage("123"))
+        broadcaster.broadcastJson(EPOST.testMessage("123"))
         db.getEksternVarsling("123").assert {
             size shouldNotBe 0
             first()["sms"] shouldBe true
             first()["epost"] shouldBe true
         }
 
-        testRapid.sendTestMessage(EPOST.testMessage("124"))
-        testRapid.sendTestMessage(SMS.testMessage("124"))
+        broadcaster.broadcastJson(EPOST.testMessage("124"))
+        broadcaster.broadcastJson(SMS.testMessage("124"))
 
         db.getEksternVarsling("123").assert {
             size shouldBe 1
@@ -73,8 +68,8 @@ internal class EksternVarslingSinkTest {
 
         db.insertEksterntTestVarsel(testEvent, testIdent, previous, EPOST)
 
-        testRapid.sendTestMessage(SMS.testMessage(testEvent, testIdent))
-        testRapid.sendTestMessage(EPOST.testMessage(testEvent, testIdent))
+        broadcaster.broadcastJson(SMS.testMessage(testEvent, testIdent))
+        broadcaster.broadcastJson(EPOST.testMessage(testEvent, testIdent))
 
         db.getEksternVarsling(eventId = testEvent).assert {
             size shouldBe 2
@@ -87,15 +82,15 @@ internal class EksternVarslingSinkTest {
         val eventId2 = UUID.randomUUID().toString()
         val eventId3 = UUID.randomUUID().toString()
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId1, eksternVarsling = true))
-        testRapid.sendTestMessage(SMS.testMessage(eventId1))
+        broadcaster.broadcastJson(VarselTestData.varselAktivertMessage(varselId = eventId1, eksternVarsling = true))
+        broadcaster.broadcastJson(SMS.testMessage(eventId1))
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId2, eksternVarsling = true))
-        testRapid.sendTestMessage(EPOST.testMessage(eventId2))
+        broadcaster.broadcastJson(VarselTestData.varselAktivertMessage(varselId = eventId2, eksternVarsling = true))
+        broadcaster.broadcastJson(EPOST.testMessage(eventId2))
 
-        testRapid.sendTestMessage(VarselTestData.varselAktivertMessage(varselId = eventId3, eksternVarsling = true))
-        testRapid.sendTestMessage(EPOST.testMessage(eventId3))
-        testRapid.sendTestMessage(SMS.testMessage(eventId3))
+        broadcaster.broadcastJson(VarselTestData.varselAktivertMessage(varselId = eventId3, eksternVarsling = true))
+        broadcaster.broadcastJson(EPOST.testMessage(eventId3))
+        broadcaster.broadcastJson(SMS.testMessage(eventId3))
 
         val varsel1 = db.getVarsel(eventId1)!!
         varsel1.eksternVarslingSendtSms shouldBe true

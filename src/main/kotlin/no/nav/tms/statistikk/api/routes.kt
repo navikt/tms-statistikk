@@ -8,7 +8,7 @@ import io.ktor.server.routing.*
 import no.nav.tms.statistikk.login.LoginRepository
 
 
-internal fun Routing.statistikk(loginRepository: LoginRepository) {
+fun Routing.statistikk(loginRepository: LoginRepository) {
     route("/hent") {
 
         get {

@@ -9,7 +9,7 @@ import org.junit.jupiter.api.TestInstance
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class LoginRepositoryTest {
+class LoginRepositoryTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val loginRepository = LoginRepository(db)

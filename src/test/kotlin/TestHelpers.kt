@@ -2,7 +2,7 @@
 import org.intellij.lang.annotations.Language
 
 @Language("JSON")
-internal fun utkastCreatedMelding(utkastId: String = "123", ident: String = "887766") = """
+fun utkastCreatedMelding(utkastId: String = "123", ident: String = "887766") = """
     {
     "@event_name":"created",
     "utkastId":"$utkastId",
@@ -11,7 +11,7 @@ internal fun utkastCreatedMelding(utkastId: String = "123", ident: String = "887
 """.trimIndent()
 
 @Language("JSON")
-internal fun utkastUpdatedMelding(utkastId: String = "123", ident: String = "887766") = """
+fun utkastUpdatedMelding(utkastId: String = "123", ident: String = "887766") = """
     {
       "@event_name": "created",
       "utkastId": "$utkastId",
@@ -24,7 +24,7 @@ internal fun utkastUpdatedMelding(utkastId: String = "123", ident: String = "887
 """.trimIndent()
 
 @Language("JSON")
-internal fun utkastDeletedMelding(utkastId: String = "123") = """
+fun utkastDeletedMelding(utkastId: String = "123") = """
     {
     "@event_name":"deleted",
     "utkastId":"$utkastId"

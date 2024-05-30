@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-internal class StatistikkApiTest {
+class StatistikkApiTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val loginRepository = LoginRepository(db)

@@ -11,7 +11,7 @@ const val eksternVarslingTestIdent = "987654"
 val EPOST ="epost"
 val SMS ="sms"
 
-internal fun Database.getEksternVarsling(eventId: String) = list {
+fun Database.getEksternVarsling(eventId: String) = list {
     queryOf(
         """select eventid,ident,sendttimestamp,epost,sms from innlogging_etter_eksternt_varsel
                     |where eventid=:eventId""".trimMargin(),
@@ -27,7 +27,7 @@ internal fun Database.getEksternVarsling(eventId: String) = list {
     }.asList
 }
 
-internal fun Database.insertEksterntTestVarsel(
+fun Database.insertEksterntTestVarsel(
     eventId: String,
     ident: String,
     sentTime: LocalDateTime = DateTimeHelper.nowAtUtc(),
@@ -46,12 +46,12 @@ internal fun Database.insertEksterntTestVarsel(
         )
     }
 
-internal fun Any?.toDateTimeMinutes(): LocalDateTime {
+fun Any?.toDateTimeMinutes(): LocalDateTime {
     require(this != null)
     require(this is LocalDateTime)
     return toMinutes()
 }
 
-internal fun LocalDateTime.toMinutes() = this.truncatedTo(ChronoUnit.MINUTES)
+fun LocalDateTime.toMinutes() = this.truncatedTo(ChronoUnit.MINUTES)
 private fun String.erSms() = lowercase() == "sms"
 private fun String.erEpost() = lowercase() == "epost"
