@@ -36,6 +36,7 @@ dependencies {
     implementation(Ktor.Server.statusPages)
     implementation(Ktor.Serialization.jackson)
     implementation(KtorHtml.htmlBuilder)
+    implementation(Logstash.logbackEncoder)
     implementation(Micrometer.registryPrometheus)
     implementation(TmsCommonLib.utils)
     implementation(TmsKtorTokenSupport.azureValidation)
