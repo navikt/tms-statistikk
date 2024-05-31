@@ -56,5 +56,5 @@ private fun startRapid(
         onStartup {
             Flyway.runFlywayMigrations(environment)
         }
-    }
+    }.start()
 }
