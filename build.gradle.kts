@@ -38,8 +38,6 @@ dependencies {
     implementation(Ktor.Serialization.jackson)
     implementation(KtorHtml.htmlBuilder)
     implementation(Logstash.logbackEncoder)
-    implementation(Micrometer.registryPrometheus)
-    implementation(Prometheus.common)
     implementation(TmsCommonLib.utils)
     implementation(TmsKtorTokenSupport.azureValidation)
     implementation(Postgresql.postgresql)
