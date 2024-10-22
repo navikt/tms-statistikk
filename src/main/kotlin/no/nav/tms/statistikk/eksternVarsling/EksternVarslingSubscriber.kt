@@ -11,7 +11,7 @@ class EksternVarslingSubscriber(
     private val eksternVarslingRepository: EksternVarslingRepository
 ) : Subscriber() {
 
-    override fun subscribe() = Subscription.forEvent("eksternStatusOppdatert")
+    override fun subscribe() = Subscription.forEvents("eksternStatusOppdatert", "eksternVarslingStatusOppdatert")
         .withFields(
             "kanal",
             "varselId",

@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestInstance
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class EksternVarslingSinkTest {
+class EksternVarslingSubscriberTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
     private val varselRepository = VarselRepository(db)
@@ -104,6 +104,15 @@ class EksternVarslingSinkTest {
         varsel3.eksternVarslingSendtSms shouldBe true
         varsel3.eksternVarslingSendtEpost shouldBe true
     }
+
+    @Test
+    fun `leser også eventer fra ny ekstern-varsling app`() {
+        broadcaster.broadcastJson(SMS.testMessageNew("123"))
+        broadcaster.broadcastJson(EPOST.testMessageNew("124"))
+
+        db.getEksternVarsling("123").first() shouldNotBe null
+        db.getEksternVarsling("124").first() shouldNotBe null
+    }
 }
 
 
@@ -119,5 +128,21 @@ private fun String.testMessage(eventId: String, ident: String = eksternVarslingT
         "appnavn": "veilarbaktivitet"                        
     },
     "kanal": "${this}",
+    "tidspunkt": "${nowAtUtcZ()}"
+}"""
+
+private fun String.testMessageNew(eventId: String, ident: String = eksternVarslingTestIdent) = """{
+    "@event_name": "eksternVarslingStatusOppdatert",
+    "ident": "$ident",
+    "status": "sendt",
+    "varselId": "$eventId",
+    "varseltype": "oppgave",
+    "produsent": {
+        "cluster": "dev-gcp",
+        "namespace": "pto",
+        "appnavn": "veilarbaktivitet"                        
+    },
+    "kanal": "${this}",
+    "batch": true,
     "tidspunkt": "${nowAtUtcZ()}"
 }"""
