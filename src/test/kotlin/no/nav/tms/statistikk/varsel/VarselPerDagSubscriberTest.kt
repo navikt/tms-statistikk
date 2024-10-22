@@ -1,8 +1,6 @@
 package no.nav.tms.statistikk.varsel
 
 import io.kotest.matchers.shouldBe
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotliquery.queryOf
 import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
@@ -15,7 +13,6 @@ import java.time.LocalDate
 class VarselPerDagSubscriberTest {
 
     private val database = LocalPostgresDatabase.cleanDb()
-    private val registry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     private val varselRepository = VarselRepository(database)
 
     private val broadcaster = MessageBroadcaster(listOf(
@@ -25,7 +22,6 @@ class VarselPerDagSubscriberTest {
     @AfterEach
     fun cleanDb() {
         database.update { queryOf("delete from varsler_per_dag") }
-        registry.clear()
     }
 
     @Test
