@@ -4,24 +4,21 @@ import assert
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import kotliquery.queryOf
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.VarselType.beskjed
 import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapMetadata
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import java.util.*
 
-internal class VarselAktivertSinkTest {
+class VarselAktivertSubscriberTest {
     private val database = LocalPostgresDatabase.cleanDb()
     private val varselRepository = VarselRepository(database)
-    private val testRapid = TestRapid()
 
-    @BeforeAll
-    fun setupSinks() {
-        VarselAktivertSink(testRapid, varselRepository)
-    }
+    private val broadcaster = MessageBroadcaster(listOf(
+        VarselAktivertSubscriber(varselRepository)
+    ))
 
     @AfterEach
     fun cleanDb() {
@@ -57,7 +54,7 @@ internal class VarselAktivertSinkTest {
             eksternVarsling = eksternVarsling
         )
 
-        testRapid.sendTestMessage(testMessage)
+        broadcaster.broadcastJson(testMessage)
 
         val varsel = database.getVarsel(eventId)
 
@@ -89,8 +86,8 @@ internal class VarselAktivertSinkTest {
         val tomLenkeVarsel = VarselTestData.varselAktivertMessage(varselId = eventId1, link = " ")
         val varselMedLenke = VarselTestData.varselAktivertMessage(varselId = eventId2, link = "http://link")
 
-        testRapid.sendTestMessage(tomLenkeVarsel)
-        testRapid.sendTestMessage(varselMedLenke)
+        broadcaster.broadcastJson(tomLenkeVarsel)
+        broadcaster.broadcastJson(varselMedLenke)
 
         database.getVarsel(eventId1)?.lenke shouldBe false
         database.getVarsel(eventId2)?.lenke shouldBe true
@@ -105,8 +102,8 @@ internal class VarselAktivertSinkTest {
             VarselTestData.varselAktivertMessage(varselId = eventId1).addBeredskapMetadata("Something happened")
         val utenBeredskapsTittel = VarselTestData.varselAktivertMessage(varselId = eventId2)
 
-        testRapid.sendTestMessage(utenBeredskapsTittel)
-        testRapid.sendTestMessage(medBeredskapsTittel)
+        broadcaster.broadcastJson(utenBeredskapsTittel)
+        broadcaster.broadcastJson(medBeredskapsTittel)
 
         database.getVarsel(eventId2).assert {
             require(this != null)
@@ -129,8 +126,8 @@ internal class VarselAktivertSinkTest {
         val medFrist =
             VarselTestData.varselAktivertMessage(varselId = eventId2, aktivFremTil = DateTimeHelper.nowAtUtcZ())
 
-        testRapid.sendTestMessage(utenFrist)
-        testRapid.sendTestMessage(medFrist)
+        broadcaster.broadcastJson(utenFrist)
+        broadcaster.broadcastJson(medFrist)
 
         database.getVarsel(eventId1)?.frist shouldBe false
         database.getVarsel(eventId2)?.frist shouldBe true

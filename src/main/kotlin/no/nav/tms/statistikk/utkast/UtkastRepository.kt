@@ -6,7 +6,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-internal class UtkastRespository(val database: Database) {
+class UtkastRespository(val database: Database) {
     fun insertCreated(utkastId: String, ident: String, antallSpråk: Int) {
         database.update {
             //language=PostgreSQL

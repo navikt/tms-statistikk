@@ -1,18 +1,14 @@
 package no.nav.tms.statistikk
 
-import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidApplication.RapidApplicationConfig.Companion.fromEnv
-import no.nav.helse.rapids_rivers.RapidsConnection
+import no.nav.tms.kafka.application.KafkaApplication
 import no.nav.tms.statistikk.database.Flyway
 import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
-import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSink
+import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSubscriber
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.microfrontends.MicrofrontendRepository
-import no.nav.tms.statistikk.microfrontends.MicrofrontendSink
-import no.nav.tms.statistikk.utkast.UtkastRespository
-import no.nav.tms.statistikk.utkast.UtkastCreatedSink
-import no.nav.tms.statistikk.utkast.UtkastDeletedSink
+import no.nav.tms.statistikk.microfrontends.MicrofrontendSubscriber
+import no.nav.tms.statistikk.utkast.*
 import no.nav.tms.statistikk.varsel.*
 
 fun main() {
@@ -32,21 +28,33 @@ private fun startRapid(
     val eksternVarslingRepository = EksternVarslingRepository(database)
     val utkastRespository = UtkastRespository(database)
 
-    RapidApplication.Builder(fromEnv(environment.rapidConfig())).withKtorModule {
-        statistikkApi(loginRepository)
-    }.build().apply {
-        VarselAktivertSink(this, varselRepository)
-        VarselInaktivertSink(this, varselRepository)
-        VarselPerDagSink(this, varselRepository)
-        EksternVarslingSink(this, eksternVarslingRepository)
-        UtkastCreatedSink(this, utkastRespository)
-        UtkastDeletedSink(this,utkastRespository)
-        MicrofrontendSink(this, MicrofrontendRepository(database))
-    }.apply {
-        register(object : RapidsConnection.StatusListener {
-            override fun onStartup(rapidsConnection: RapidsConnection) {
-                Flyway.runFlywayMigrations(environment)
-            }
-        })
+    KafkaApplication.build {
+        kafkaConfig {
+            groupId = environment.groupId
+            readTopics(
+                "min-side.brukervarsel-v1",
+                "min-side.aapen-utkast-v1",
+                "min-side.aapen-microfrontend-v1"
+            )
+            eventNameFields("@event_name", "@action")
+        }
+
+        ktorModule {
+            statistikkApi(loginRepository)
+        }
+
+        subscribers(
+            VarselAktivertSubscriber(varselRepository),
+            VarselInaktivertSubscriber(varselRepository),
+            VarselPerDagSubscriber(varselRepository),
+            EksternVarslingSubscriber(eksternVarslingRepository),
+            UtkastCreatedSubscriber(utkastRespository),
+            UtkastDeletedSubscriber(utkastRespository),
+            MicrofrontendSubscriber(MicrofrontendRepository(database))
+        )
+
+        onStartup {
+            Flyway.runFlywayMigrations(environment)
+        }
     }.start()
 }
