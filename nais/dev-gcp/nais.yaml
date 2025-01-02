@@ -25,6 +25,8 @@ spec:
     - "https://tms-statistikk.intern.dev.nav.no"
   kafka:
     pool: nav-dev
+  secureLogs:
+    enabled: true
   azure:
     application:
       enabled: true
