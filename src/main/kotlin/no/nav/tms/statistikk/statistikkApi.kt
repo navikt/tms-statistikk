@@ -23,14 +23,18 @@ fun Application.statistikkApi(
 
     install(StatusPages) {
         val log = KotlinLogging.logger {}
+        val securelog = KotlinLogging.logger("secureLog")
+
         exception<Throwable> { call, cause ->
             when (cause) {
                 is IllegalArgumentException -> {
-                    log.info { "Bad request til statistikkApi: $cause, ${cause.message.toString()}" }
+                    log.warn { "Bad request til statistikkApi" }
+                    securelog.warn(cause) { "Bad request til statistikkApi" }
                     call.respond(HttpStatusCode.BadRequest, cause.message ?: "")
                 }
                 else -> {
-                    log.error { "Feil i statistikkApi: $cause, ${cause.message.toString()}" }
+                    log.error { "Feil i statistikkApi" }
+                    securelog.error(cause) { "Feil i statistikkApi" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
