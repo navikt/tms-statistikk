@@ -13,6 +13,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.token.support.azure.validation.azure
+import java.io.IOException
 import java.text.DateFormat
 
 fun Application.statistikkApi(
@@ -31,6 +32,11 @@ fun Application.statistikkApi(
                     log.warn { "Bad request til statistikkApi" }
                     securelog.warn(cause) { "Bad request til statistikkApi" }
                     call.respond(HttpStatusCode.BadRequest, cause.message ?: "")
+                }
+                is IOException -> {
+                    log.warn { "IO-feil i statistikk-api" }
+                    securelog.warn(cause) { "IO-feil i statistikk-api" }
+                    call.respond(HttpStatusCode.InternalServerError)
                 }
                 else -> {
                     log.error { "Feil i statistikkApi" }

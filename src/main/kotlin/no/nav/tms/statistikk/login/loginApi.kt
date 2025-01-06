@@ -8,10 +8,9 @@ import io.ktor.server.routing.*
 
 fun Route.loginApi(loginRepository: LoginRepository) {
     post("/innlogging") {
-
-            val login: Login = call.receive()
-            loginRepository.registerLogin(login.ident)
-            call.respond(HttpStatusCode.NoContent)
+        val login: Login = call.receive()
+        loginRepository.registerLogin(login.ident)
+        call.respond(HttpStatusCode.NoContent)
     }
 }
 
