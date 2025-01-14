@@ -44,8 +44,8 @@ dependencies {
     implementation(KotliQuery.kotliquery)
     implementation(TmsKafkaTools.kafkaApplication)
 
-    testImplementation(Junit.api)
-    testImplementation(Junit.engine)
+    testImplementation(JunitPlatform.launcher)
+    testImplementation(JunitJupiter.api)
     testImplementation(TestContainers.postgresql)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
