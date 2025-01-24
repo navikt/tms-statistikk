@@ -6,7 +6,6 @@ import cleanTables
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.shouldNotBe
 import no.nav.tms.kafka.application.MessageBroadcaster
-import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.*
 import org.junit.jupiter.api.AfterEach
@@ -28,52 +27,6 @@ class EksternVarslingSubscriberTest {
     @AfterEach
     fun cleanup() {
         db.cleanTables("innlogging_etter_eksternt_varsel")
-    }
-
-    @Test
-    fun `Plukker opp ekstern varsling sendt`() {
-        broadcaster.broadcastJson(SMS.testMessage("123"))
-        broadcaster.broadcastJson(EPOST.testMessage("124"))
-
-        db.getEksternVarsling("123").first() shouldNotBe null
-        db.getEksternVarsling("124").first() shouldNotBe null
-    }
-
-    @Test
-    fun `Oppdaterer varslingskanaler`() {
-        broadcaster.broadcastJson(SMS.testMessage("123"))
-        broadcaster.broadcastJson(EPOST.testMessage("123"))
-        db.getEksternVarsling("123").assert {
-            size shouldNotBe 0
-            first()["sms"] shouldBe true
-            first()["epost"] shouldBe true
-        }
-
-        broadcaster.broadcastJson(EPOST.testMessage("124"))
-        broadcaster.broadcastJson(SMS.testMessage("124"))
-
-        db.getEksternVarsling("123").assert {
-            size shouldBe 1
-            first()["sms"] shouldBe true
-            first()["epost"] shouldBe true
-        }
-
-    }
-
-    @Test
-    fun `Plukker opp revarsling sendt`() {
-        val testEvent = "23456789"
-        val testIdent = "987654"
-        val previous = DateTimeHelper.nowAtUtc().minusDays(11)
-
-        db.insertEksterntTestVarsel(testEvent, testIdent, previous, EPOST)
-
-        broadcaster.broadcastJson(SMS.testMessage(testEvent, testIdent))
-        broadcaster.broadcastJson(EPOST.testMessage(testEvent, testIdent))
-
-        db.getEksternVarsling(eventId = testEvent).assert {
-            size shouldBe 2
-        }
     }
 
     @Test
@@ -103,15 +56,6 @@ class EksternVarslingSubscriberTest {
         val varsel3 = db.getVarsel(eventId3)!!
         varsel3.eksternVarslingSendtSms shouldBe true
         varsel3.eksternVarslingSendtEpost shouldBe true
-    }
-
-    @Test
-    fun `leser også eventer fra ny ekstern-varsling app`() {
-        broadcaster.broadcastJson(SMS.testMessageNew("123"))
-        broadcaster.broadcastJson(EPOST.testMessageNew("124"))
-
-        db.getEksternVarsling("123").first() shouldNotBe null
-        db.getEksternVarsling("124").first() shouldNotBe null
     }
 }
 

@@ -21,12 +21,6 @@ class EksternVarslingSubscriber(
         .withValue("status", "sendt")
 
     override suspend fun receive(jsonMessage: JsonMessage) {
-        eksternVarslingRepository.insertEksternVarsling(
-            eventId = jsonMessage.varselId,
-            kanal = jsonMessage.kanal,
-            ident = jsonMessage.ident,
-            tidspunkt = jsonMessage.tidspunkt
-        )
         eksternVarslingRepository.updateVarsel(jsonMessage.varselId, jsonMessage.kanal)
     }
 }
