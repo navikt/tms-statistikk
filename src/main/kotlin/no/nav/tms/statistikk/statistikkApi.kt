@@ -10,14 +10,12 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
-import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.token.support.azure.validation.azure
 import java.io.IOException
 import java.text.DateFormat
 
 fun Application.statistikkApi(
-    loginRepository: LoginRepository,
     installAuthenticatorsFunction: Application.() -> Unit = installAuth(),
 ) {
     installAuthenticatorsFunction()
@@ -55,7 +53,7 @@ fun Application.statistikkApi(
     }
     routing {
         authenticate {
-            loginApi(loginRepository)
+            loginApi()
         }
     }
 }

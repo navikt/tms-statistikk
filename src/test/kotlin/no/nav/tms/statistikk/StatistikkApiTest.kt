@@ -10,7 +10,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
-import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.token.support.azure.validation.mock.azureMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.TestInstance
 class StatistikkApiTest {
 
     private val db = LocalPostgresDatabase.cleanDb()
-    private val loginRepository = LoginRepository(db)
 
     @BeforeEach
     fun cleanDb(){
@@ -30,7 +28,7 @@ class StatistikkApiTest {
     @Test
     fun `lagrer ikke data om innlogging`() = testApplication {
         application {
-            statistikkApi(loginRepository, authorized)
+            statistikkApi(authorized)
         }
 
         client.post("/innlogging") {
@@ -60,18 +58,13 @@ class StatistikkApiTest {
                     it.int("total")
                 }.asSingle
         } shouldBe 0
-    }
 
-    @Test
-    fun `csv innlogging nedlasting`() = testApplication {
-
-        loginRepository.registerLogin("1234576512")
-        loginRepository.registerLogin("1234576515")
-        loginRepository.registerLogin("1234576516")
-
-        application {
-            statistikkApi(loginRepository, unauthorized)
-        }
+        db.query {
+            queryOf("SELECT COUNT(ident) as total FROM innlogging_etter_eksternt_varsel")
+                .map {
+                    it.int("total")
+                }.asSingle
+        } shouldBe 0
     }
 
     private val authorized: Application.() -> Unit = {

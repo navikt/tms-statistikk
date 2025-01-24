@@ -5,7 +5,6 @@ import no.nav.tms.statistikk.database.Flyway
 import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSubscriber
-import no.nav.tms.statistikk.login.LoginRepository
 import no.nav.tms.statistikk.microfrontends.MicrofrontendRepository
 import no.nav.tms.statistikk.microfrontends.MicrofrontendSubscriber
 import no.nav.tms.statistikk.utkast.*
@@ -23,7 +22,6 @@ private fun startRapid(
 ) {
     val database = PostgresDatabase(environment)
 
-    val loginRepository = LoginRepository(database)
     val varselRepository = VarselRepository(database)
     val eksternVarslingRepository = EksternVarslingRepository(database)
     val utkastRespository = UtkastRespository(database)
@@ -40,7 +38,7 @@ private fun startRapid(
         }
 
         ktorModule {
-            statistikkApi(loginRepository)
+            statistikkApi()
         }
 
         subscribers(
