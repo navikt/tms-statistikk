@@ -28,7 +28,7 @@ class StatistikkApiTest {
     }
 
     @Test
-    fun innlogging() = testApplication {
+    fun `lagrer ikke data om innlogging`() = testApplication {
         application {
             statistikkApi(loginRepository, authorized)
         }
@@ -59,7 +59,7 @@ class StatistikkApiTest {
                 .map {
                     it.int("total")
                 }.asSingle
-        } shouldBe 2
+        } shouldBe 0
     }
 
     @Test
