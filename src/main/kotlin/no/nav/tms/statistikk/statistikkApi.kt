@@ -10,6 +10,7 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
+import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.statistikk.login.loginApi
 import no.nav.tms.token.support.azure.validation.azure
 import java.io.IOException
@@ -22,23 +23,23 @@ fun Application.statistikkApi(
 
     install(StatusPages) {
         val log = KotlinLogging.logger {}
-        val securelog = KotlinLogging.logger("secureLog")
+        val teamLog = TeamLogs.logger { }
 
         exception<Throwable> { call, cause ->
             when (cause) {
                 is IllegalArgumentException -> {
                     log.warn { "Bad request til statistikkApi" }
-                    securelog.warn(cause) { "Bad request til statistikkApi" }
+                    teamLog.warn(cause) { "Bad request til statistikkApi" }
                     call.respond(HttpStatusCode.BadRequest, cause.message ?: "")
                 }
                 is IOException -> {
                     log.warn { "IO-feil i statistikk-api" }
-                    securelog.warn(cause) { "IO-feil i statistikk-api" }
+                    teamLog.warn(cause) { "IO-feil i statistikk-api" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
                 else -> {
                     log.error { "Feil i statistikkApi" }
-                    securelog.error(cause) { "Feil i statistikkApi" }
+                    teamLog.error(cause) { "Feil i statistikkApi" }
                     call.respond(HttpStatusCode.InternalServerError)
                 }
             }
