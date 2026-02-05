@@ -15,11 +15,11 @@ import utkastDeletedMelding
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UtkastSinkTest {
-    private val db = LocalPostgresDatabase.cleanDb()
+    private val db = LocalPostgresDatabase.getCleanInstance()
     private val utkastPersistence = UtkastRespository(db)
     private val testUtkastId = "997766530"
     private val testIdent = "887799"
-    
+
     private val broadcaster = MessageBroadcaster(listOf(
         UtkastCreatedSubscriber(utkastPersistence),
         UtkastDeletedSubscriber(utkastPersistence)
@@ -36,10 +36,10 @@ class UtkastSinkTest {
 
     @Test
     fun `teller nye utkast`() {
-        db.query {
+        db.single {
             queryOf("select count(*) from utkast where time_created IS NOT NULL AND time_deleted IS NULL").map {
                 it.int("count")
-            }.asSingle
+            }
         } shouldBe 4
     }
 
@@ -61,16 +61,16 @@ class UtkastSinkTest {
         broadcaster.broadcastJson(utkastDeletedMelding("00557711"))
         broadcaster.broadcastJson(utkastDeletedMelding("00557711"))
 
-        db.query {
+        db.single {
             queryOf("select count(*) from utkast where time_deleted IS NOT NULL AND time_created IS NOT NULL").map {
                 it.int("count")
-            }.asSingle
+            }
         } shouldBe 1
 
-        db.query {
+        db.single {
             queryOf("select utkast_id, count(*) from utkast group by utkast_id ").map {
                 it.int("count")
-            }.asSingle
+            }
         } shouldBe  1
 
     }

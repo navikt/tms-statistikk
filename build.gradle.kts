@@ -38,6 +38,7 @@ dependencies {
     implementation(Ktor.Serialization.jackson)
     implementation(KtorHtml.htmlBuilder)
     implementation(Logstash.logbackEncoder)
+    implementation(TmsCommonLib.postgres)
     implementation(TmsCommonLib.teamLogger)
     implementation(TmsCommonLib.utils)
     implementation(TmsKtorTokenSupport.azureValidation)

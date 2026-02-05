@@ -2,16 +2,17 @@ package no.nav.tms.statistikk.varsel
 
 import LocalPostgresDatabase
 import kotliquery.queryOf
+import no.nav.tms.common.postgres.PostgresDatabase
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-fun LocalPostgresDatabase.antallVarsler(
+fun PostgresDatabase.antallVarsler(
     ident: String,
     type: VarselTestData.VarselType? = null,
     dato: LocalDate? = null,
     eksternVarsling: Boolean? = null
 ): Int {
-    return query {
+    return singleOrNull {
         queryOf(
             """select sum(antall) as totalt_antall from varsler_per_dag 
                where 
@@ -21,11 +22,11 @@ fun LocalPostgresDatabase.antallVarsler(
                  ${if (eksternVarsling != null) "and ekstern_varsling = :eksternVarsling" else ""}
                  group by ident """,
             mapOf("ident" to ident, "type" to type?.name, "dato" to dato, "eksternVarsling" to eksternVarsling)
-        ).map { it.int("totalt_antall") }.asSingle
+        ).map { it.int("totalt_antall") }
     } ?: 0
 }
 
-fun LocalPostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = query {
+fun PostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = singleOrNull {
     queryOf(
         """select v.*, b.beredskap_tittel, b.beredskap_ref 
         |from varsel as v 
@@ -53,7 +54,7 @@ fun LocalPostgresDatabase.getVarsel(eventId: String): DBAktivertVarsel? = query 
                 beredskapstittel = row.stringOrNull("beredskap_tittel"),
                 beredskapsRef = row.stringOrNull("beredskap_ref")
             )
-        }.asSingle
+        }
 }
 
 data class DBAktivertVarsel(
@@ -75,6 +76,4 @@ data class DBAktivertVarsel(
     val eksternVarslingSendtEpost: Boolean,
     val beredskapstittel: String?,
     val beredskapsRef: String?
-) {
-
-}
+)

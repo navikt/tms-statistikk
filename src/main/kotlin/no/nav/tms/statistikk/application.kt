@@ -1,26 +1,19 @@
 package no.nav.tms.statistikk
 
+import no.nav.tms.common.postgres.Postgres
 import no.nav.tms.kafka.application.KafkaApplication
-import no.nav.tms.statistikk.database.Flyway
-import no.nav.tms.statistikk.database.PostgresDatabase
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingRepository
 import no.nav.tms.statistikk.eksternVarsling.EksternVarslingSubscriber
 import no.nav.tms.statistikk.microfrontends.MicrofrontendRepository
 import no.nav.tms.statistikk.microfrontends.MicrofrontendSubscriber
 import no.nav.tms.statistikk.utkast.*
 import no.nav.tms.statistikk.varsel.*
+import org.flywaydb.core.Flyway
 
 fun main() {
     val environment = Environment()
-    startRapid(
-        environment = environment
-    )
-}
 
-private fun startRapid(
-    environment: Environment,
-) {
-    val database = PostgresDatabase(environment)
+    val database = Postgres.connectToJdbcUrl(environment.jdbcUrl)
 
     val varselRepository = VarselRepository(database)
     val eksternVarslingRepository = EksternVarslingRepository(database)
@@ -30,9 +23,9 @@ private fun startRapid(
         kafkaConfig {
             groupId = environment.groupId
             readTopics(
-                "min-side.brukervarsel-v1",
-                "min-side.aapen-utkast-v1",
-                "min-side.aapen-microfrontend-v1"
+                environment.internVarselTopic,
+                environment.utkastTopic ,
+                environment.microfrontendTopic,
             )
             eventNameFields("@event_name", "@action")
         }
@@ -52,7 +45,10 @@ private fun startRapid(
         )
 
         onStartup {
-            Flyway.runFlywayMigrations(environment)
+            Flyway.configure()
+                .dataSource(database.dataSource)
+                .load()
+                .migrate()
         }
     }.start()
 }

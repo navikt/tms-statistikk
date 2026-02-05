@@ -12,7 +12,7 @@ import java.time.LocalDate
 
 class VarselPerDagSubscriberTest {
 
-    private val database = LocalPostgresDatabase.cleanDb()
+    private val database = LocalPostgresDatabase.getCleanInstance()
     private val varselRepository = VarselRepository(database)
 
     private val broadcaster = MessageBroadcaster(listOf(

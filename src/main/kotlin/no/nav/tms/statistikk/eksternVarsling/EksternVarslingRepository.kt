@@ -1,12 +1,10 @@
 package no.nav.tms.statistikk.eksternVarsling
 
 import kotliquery.queryOf
-import no.nav.tms.statistikk.database.Database
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
+import no.nav.tms.common.postgres.PostgresDatabase
 
 
-class EksternVarslingRepository(val db: Database) {
+class EksternVarslingRepository(val db: PostgresDatabase) {
 
     fun updateVarsel(eventId: String, kanal: String) = db.update {
 

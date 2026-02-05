@@ -1,14 +1,14 @@
 package no.nav.tms.statistikk.microfrontends
 
 import kotliquery.queryOf
-import no.nav.tms.statistikk.database.Database
+import no.nav.tms.common.postgres.PostgresDatabase
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class MicrofrontendRepository(val database: Database) {
+class MicrofrontendRepository(val database: PostgresDatabase) {
     fun insertMicrofrontend(action: String, microfrontendId: String, ident: String, initiatedBy: String?) {
 
-        val newEvent = database.query {
+        val newEvent = database.singleOrNull {
             queryOf(
                 """select action from microfrontends 
                  where microfrontend_id=:microfrontendId and ident=:ident
@@ -20,7 +20,7 @@ class MicrofrontendRepository(val database: Database) {
                 )
             ).map { row ->
                 row.string("action") != action
-            }.asSingle
+            }
         } ?: (action == "enable")
 
         if (newEvent) {

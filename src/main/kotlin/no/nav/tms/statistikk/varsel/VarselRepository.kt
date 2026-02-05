@@ -1,10 +1,10 @@
 package no.nav.tms.statistikk.varsel
 
 import kotliquery.queryOf
-import no.nav.tms.statistikk.database.Database
+import no.nav.tms.common.postgres.PostgresDatabase
 import no.nav.tms.statistikk.toUtcLocalDateTime
 
-class VarselRepository(private val database: Database) {
+class VarselRepository(private val database: PostgresDatabase) {
     fun insertVarsel(varsel: AktivertVarsel) {
         database.update {
             queryOf(

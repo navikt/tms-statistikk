@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import java.util.*
 
 class VarselAktivertSubscriberTest {
-    private val database = LocalPostgresDatabase.cleanDb()
+    private val database = LocalPostgresDatabase.getCleanInstance()
     private val varselRepository = VarselRepository(database)
 
     private val broadcaster = MessageBroadcaster(listOf(

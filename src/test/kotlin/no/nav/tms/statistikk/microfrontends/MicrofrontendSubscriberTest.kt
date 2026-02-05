@@ -5,6 +5,7 @@ import assert
 import io.kotest.assertions.withClue
 import io.kotest.matchers.shouldBe
 import kotliquery.queryOf
+import no.nav.tms.common.postgres.PostgresDatabase
 import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
@@ -16,7 +17,7 @@ import java.time.temporal.ChronoUnit.MINUTES
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class MicrofrontendSubscriberTest {
-    private val database = LocalPostgresDatabase.cleanDb()
+    private val database = LocalPostgresDatabase.getCleanInstance()
     private val testFnr = "12345678910"
 
     private val broadcaster = MessageBroadcaster(
@@ -97,7 +98,7 @@ class MicrofrontendSubscriberTest {
         broadcaster.broadcastJson(this)
     }
 }
-private fun LocalPostgresDatabase.getAll() =
+private fun PostgresDatabase.getAll() =
     list {
         queryOf("select * from microfrontends").map { row ->
             MicrofrontendResult(
@@ -107,7 +108,7 @@ private fun LocalPostgresDatabase.getAll() =
                 microfrontendId = row.string("microfrontend_id"),
                 initiatedBy = row.stringOrNull("initiated_by")
             )
-        }.asList
+        }
     }
 
 private fun enableMelding(ident: String, microfrontendtId: String) =

@@ -6,14 +6,13 @@ import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import no.nav.tms.statistikk.varsel.VarselTestData.addBeredskapMetadata
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.util.*
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class VarselInaktivertSubscriberTest {
-    private val database = LocalPostgresDatabase.cleanDb()
+    private val database = LocalPostgresDatabase.getCleanInstance()
     private val varselRepository = VarselRepository(database)
 
     private val broadcaster = MessageBroadcaster(listOf(

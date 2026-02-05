@@ -18,7 +18,7 @@ import org.junit.jupiter.api.TestInstance
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class StatistikkApiTest {
 
-    private val db = LocalPostgresDatabase.cleanDb()
+    private val db = LocalPostgresDatabase.getCleanInstance()
 
     @BeforeEach
     fun cleanDb(){
@@ -52,18 +52,18 @@ class StatistikkApiTest {
             }
         }.status shouldBe(HttpStatusCode.NoContent)
 
-        db.query {
+        db.single {
             queryOf("SELECT COUNT(ident) as total FROM innlogging_per_dag")
                 .map {
                     it.int("total")
-                }.asSingle
+                }
         } shouldBe 0
 
-        db.query {
+        db.single {
             queryOf("SELECT COUNT(ident) as total FROM innlogging_etter_eksternt_varsel")
                 .map {
                     it.int("total")
-                }.asSingle
+                }
         } shouldBe 0
     }
 

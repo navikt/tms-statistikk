@@ -1,10 +1,8 @@
 package no.nav.tms.statistikk.eksternVarsling
 
 import LocalPostgresDatabase
-import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.*
@@ -16,7 +14,12 @@ import java.util.*
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class EksternVarslingSubscriberTest {
 
-    private val db = LocalPostgresDatabase.cleanDb()
+    private val eksternVarslingTestIdent = "987654"
+
+    private val EPOST = "epost"
+    private val SMS = "sms"
+
+    private val db = LocalPostgresDatabase.getCleanInstance()
     private val varselRepository = VarselRepository(db)
 
     private val broadcaster = MessageBroadcaster(listOf(
@@ -57,36 +60,20 @@ class EksternVarslingSubscriberTest {
         varsel3.eksternVarslingSendtSms shouldBe true
         varsel3.eksternVarslingSendtEpost shouldBe true
     }
+
+    private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
+        "@event_name": "eksternStatusOppdatert",
+        "ident": "$ident",
+        "status": "sendt",
+        "varselId": "$eventId",
+        "varseltype": "oppgave",
+        "produsent": {
+            "cluster": "dev-gcp",
+            "namespace": "pto",
+            "appnavn": "veilarbaktivitet"                        
+        },
+        "kanal": "${this}",
+        "tidspunkt": "${nowAtUtcZ()}"
+    }"""
+
 }
-
-
-private fun String.testMessage(eventId: String, ident: String = eksternVarslingTestIdent) = """{
-    "@event_name": "eksternStatusOppdatert",
-    "ident": "$ident",
-    "status": "sendt",
-    "varselId": "$eventId",
-    "varseltype": "oppgave",
-    "produsent": {
-        "cluster": "dev-gcp",
-        "namespace": "pto",
-        "appnavn": "veilarbaktivitet"                        
-    },
-    "kanal": "${this}",
-    "tidspunkt": "${nowAtUtcZ()}"
-}"""
-
-private fun String.testMessageNew(eventId: String, ident: String = eksternVarslingTestIdent) = """{
-    "@event_name": "eksternVarslingStatusOppdatert",
-    "ident": "$ident",
-    "status": "sendt",
-    "varselId": "$eventId",
-    "varseltype": "oppgave",
-    "produsent": {
-        "cluster": "dev-gcp",
-        "namespace": "pto",
-        "appnavn": "veilarbaktivitet"                        
-    },
-    "kanal": "${this}",
-    "batch": true,
-    "tidspunkt": "${nowAtUtcZ()}"
-}"""

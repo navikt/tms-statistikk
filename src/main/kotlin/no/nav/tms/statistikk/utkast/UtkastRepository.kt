@@ -1,20 +1,20 @@
 package no.nav.tms.statistikk.utkast
 
 import kotliquery.queryOf
-import no.nav.tms.statistikk.database.Database
+import no.nav.tms.common.postgres.PostgresDatabase
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-class UtkastRespository(val database: Database) {
+class UtkastRespository(val database: PostgresDatabase) {
     fun insertCreated(utkastId: String, ident: String, antallSpråk: Int) {
         database.update {
             //language=PostgreSQL
             queryOf(
-                """INSERT INTO utkast(ident,utkast_id,dato,event,time_created,antall_språk) 
-                    |VALUES(:ident,:utkastId,:dato,'created',:timestamp,:antallSprak) 
-                    |ON CONFLICT DO NOTHING 
-                    |""".trimMargin(),
+                """INSERT INTO utkast(ident, utkast_id, dato, event, time_created, antall_språk) 
+                    VALUES(:ident,:utkastId,:dato,'created',:timestamp,:antallSprak) 
+                    ON CONFLICT DO NOTHING 
+                """,
                 mapOf(
                     "ident" to ident,
                     "utkastId" to utkastId,
@@ -31,11 +31,11 @@ class UtkastRespository(val database: Database) {
             //language=PostgreSQL
             queryOf(
                 """UPDATE utkast 
-                    |SET event='deleted',
-                    |dato =:dato,
-                    |time_deleted=:timestamp 
-                    |WHERE utkast_id=:utkastId AND event!='deleted'
-                    |""".trimMargin(),
+                    SET event='deleted',
+                    dato =:dato,
+                    time_deleted=:timestamp 
+                    WHERE utkast_id=:utkastId AND event!='deleted'
+                    """,
                 mapOf(
                     "utkastId" to utkastId,
                     "dato" to LocalDate.now(ZoneId.of("UTC")),

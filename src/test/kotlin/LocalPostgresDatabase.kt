@@ -1,53 +1,37 @@
 import com.zaxxer.hikari.HikariDataSource
 import kotliquery.queryOf
-import no.nav.tms.statistikk.database.Database
+import no.nav.tms.common.postgres.Postgres
+import no.nav.tms.common.postgres.PostgresDatabase
 import org.flywaydb.core.Flyway
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 
-class LocalPostgresDatabase private constructor() : Database {
+object LocalPostgresDatabase {
 
-    private val memDataSource: HikariDataSource
-    private val container = PostgreSQLContainer<Nothing>("postgres:14.5")
+    private val container = PostgreSQLContainer("postgres:14.5")
+        .also { it.start() }
 
-    companion object {
-        private val instance by lazy {
-            LocalPostgresDatabase().also {
-                it.migrate()
-            }
-        }
-
-        fun cleanDb(): LocalPostgresDatabase {
-
-            instance.cleanTables(
-                "beredskapsvarsel",
-                "varsel",
-                "microfrontends",
-                "utkast",
-                "innlogging_per_dag"
-            )
-            return instance
+    val database: PostgresDatabase by lazy {
+        Postgres.connectToContainer(container).also {
+            migrate(it.dataSource)
         }
     }
 
-    init {
-        container.start()
-        memDataSource = createDataSource()
+    fun getCleanInstance(): PostgresDatabase {
+        resetInstance()
+        return database
     }
 
-    override val dataSource: HikariDataSource
-        get() = memDataSource
-
-    private fun createDataSource(): HikariDataSource {
-        return HikariDataSource().apply {
-            jdbcUrl = container.jdbcUrl
-            username = container.username
-            password = container.password
-            isAutoCommit = true
-            validate()
-        }
+    fun resetInstance() {
+        database.cleanTables(
+            "beredskapsvarsel",
+            "varsel",
+            "microfrontends",
+            "utkast",
+            "innlogging_per_dag"
+        )
     }
 
-    private fun migrate() {
+    private fun migrate(dataSource: HikariDataSource) {
         Flyway.configure()
             .connectRetries(3)
             .dataSource(dataSource)
@@ -56,7 +40,7 @@ class LocalPostgresDatabase private constructor() : Database {
     }
 }
 
-fun Database.cleanTables(vararg tables: String) {
+fun PostgresDatabase.cleanTables(vararg tables: String) {
     tables.forEach { table ->
         update {
             queryOf("delete from $table")
