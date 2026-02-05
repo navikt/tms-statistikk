@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - gradle-update
-
 jobs:
   update-gradle-wrapper:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
 
     steps:
       - uses: actions/checkout@v5
