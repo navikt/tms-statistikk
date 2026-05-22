@@ -10,7 +10,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.testing.*
 import kotliquery.queryOf
-import no.nav.tms.token.support.azure.validation.mock.azureMock
+import no.nav.tms.token.support.entraid.token.verification.mock.entraIdMock
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -69,18 +69,8 @@ class StatistikkApiTest {
 
     private val authorized: Application.() -> Unit = {
         authentication {
-            azureMock {
-                setAsDefault = true
-                alwaysAuthenticated = true
-            }
-        }
-    }
-
-    private val unauthorized: Application.() -> Unit = {
-        authentication {
-            azureMock {
-                setAsDefault = true
-                alwaysAuthenticated = false
+            entraIdMock {
+                enableDefaultAuthentication()
             }
         }
     }

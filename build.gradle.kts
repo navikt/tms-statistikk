@@ -40,18 +40,19 @@ dependencies {
     implementation(Logstash.logbackEncoder)
     implementation(TmsCommonLib.teamLogger)
     implementation(TmsCommonLib.utils)
-    implementation(TmsKtorTokenSupport.azureValidation)
+    implementation(TmsKtorTokenSupport.entraIdTokenVerification)
     implementation(Postgresql.postgresql)
     implementation(KotliQuery.kotliquery)
     implementation(TmsKafkaTools.kafkaApplication)
 
     testImplementation(JunitPlatform.launcher)
     testImplementation(JunitJupiter.api)
+    testImplementation(JunitJupiter.engine)
     testImplementation(TestContainers.postgresql)
     testImplementation(Kotest.runnerJunit5)
     testImplementation(Kotest.assertionsCore)
     testImplementation(Ktor.Test.serverTestHost)
-    testImplementation(TmsKtorTokenSupport.azureValidationMock)
+    testImplementation(TmsKtorTokenSupport.entraIdTokenVerificationMock)
     testImplementation(Mockk.mockk)
 }
 
