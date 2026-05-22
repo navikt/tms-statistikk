@@ -2,12 +2,12 @@ import com.zaxxer.hikari.HikariDataSource
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
 import org.flywaydb.core.Flyway
-import org.testcontainers.containers.PostgreSQLContainer
+import org.testcontainers.postgresql.PostgreSQLContainer
 
 class LocalPostgresDatabase private constructor() : Database {
 
     private val memDataSource: HikariDataSource
-    private val container = PostgreSQLContainer<Nothing>("postgres:14.5")
+    private val container = PostgreSQLContainer("postgres:14.5")
 
     companion object {
         private val instance by lazy {

@@ -12,7 +12,7 @@ import io.ktor.server.routing.*
 import io.github.oshai.kotlinlogging.KotlinLogging
 import no.nav.tms.common.logging.TeamLogs
 import no.nav.tms.statistikk.login.loginApi
-import no.nav.tms.token.support.azure.validation.azure
+import no.nav.tms.token.support.entraid.token.verification.entraId
 import java.io.IOException
 import java.text.DateFormat
 
@@ -61,8 +61,8 @@ fun Application.statistikkApi(
 
 fun installAuth(): Application.() -> Unit = {
     authentication {
-        azure {
-            setAsDefault = true
+        entraId {
+
         }
     }
 }
