@@ -2,10 +2,13 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
     kotlin("jvm").version(Kotlin.version)
-
-    id(TmsJarBundling.plugin)
-
+    alias(managed.plugins.tms.jarBundling)
     application
+}
+
+jarBundling {
+    applicationName = "app"
+    outputDirectory = "libs"
 }
 
 kotlin {
