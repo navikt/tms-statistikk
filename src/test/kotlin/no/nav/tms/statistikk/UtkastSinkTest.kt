@@ -44,18 +44,6 @@ class UtkastSinkTest {
     }
 
     @Test
-    fun `teller språk etter oppdatering`() {
-   /*     broadcaster.broadcastJson(utkastUpdatedMelding(testUtkastId, testIdent))
-
-        db.query {
-            queryOf("select antall_språk from utkast where utkast_id='$testUtkastId'").map {
-                it.int("antall_språk")
-            }.asSingle
-        } shouldBe 2*/
-
-    }
-
-    @Test
     fun `teller slettede utkast`() {
         broadcaster.broadcastJson(utkastCreatedMelding("00557711"))
         broadcaster.broadcastJson(utkastDeletedMelding("00557711"))

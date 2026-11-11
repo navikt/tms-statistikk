@@ -1,10 +1,8 @@
 package no.nav.tms.statistikk.eksternVarsling
 
 import LocalPostgresDatabase
-import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNotBe
 import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper.nowAtUtcZ
 import no.nav.tms.statistikk.varsel.*
@@ -72,21 +70,5 @@ private fun String.testMessage(eventId: String, ident: String = eksternVarslingT
         "appnavn": "veilarbaktivitet"                        
     },
     "kanal": "${this}",
-    "tidspunkt": "${nowAtUtcZ()}"
-}"""
-
-private fun String.testMessageNew(eventId: String, ident: String = eksternVarslingTestIdent) = """{
-    "@event_name": "eksternVarslingStatusOppdatert",
-    "ident": "$ident",
-    "status": "sendt",
-    "varselId": "$eventId",
-    "varseltype": "oppgave",
-    "produsent": {
-        "cluster": "dev-gcp",
-        "namespace": "pto",
-        "appnavn": "veilarbaktivitet"                        
-    },
-    "kanal": "${this}",
-    "batch": true,
     "tidspunkt": "${nowAtUtcZ()}"
 }"""

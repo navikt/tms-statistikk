@@ -3,8 +3,6 @@ package no.nav.tms.statistikk.eksternVarsling
 import no.nav.tms.kafka.application.JsonMessage
 import no.nav.tms.kafka.application.Subscriber
 import no.nav.tms.kafka.application.Subscription
-import no.nav.tms.statistikk.asUtcDateTime
-import java.time.LocalDateTime
 
 
 class EksternVarslingSubscriber(
@@ -25,15 +23,7 @@ class EksternVarslingSubscriber(
     }
 }
 
-val JsonMessage.ident: String
-    get() = get("ident").asText()
 val JsonMessage.kanal: String
     get() = get("kanal").asText()
 val JsonMessage.varselId: String
     get() = get("varselId").asText()
-val JsonMessage.tidspunkt: LocalDateTime
-    get() = get("tidspunkt").asUtcDateTime()
-
-
-
-

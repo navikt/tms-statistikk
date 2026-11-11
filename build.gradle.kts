@@ -26,8 +26,6 @@ repositories {
 }
 
 dependencies {
-    implementation(libs.ktor.server.html.builder)
-
     implementation(managed.bundles.flyway)
     implementation(managed.hikariCp)
     implementation(managed.jackson.datatypeJsr310)
@@ -43,21 +41,18 @@ dependencies {
     implementation(managed.logback.encoder)
     implementation(managed.postgresql)
     implementation(managed.kotliQuery)
-    implementation(managed.tms.commonLib.postgres)
     implementation(managed.tms.commonLib.teamLogger)
     implementation(managed.tms.commonLib.utils)
-    implementation(managed.tms.ktorTokenSupport.userToken.verification)
     implementation(managed.tms.kafka.application)
+    implementation(managed.tms.ktorTokenSupport.entraId.verification)
 
     testImplementation(managed.junit.launcher)
     testImplementation(managed.junit.api)
     testImplementation(managed.junit.engine)
     testImplementation(managed.testContainers.postgresql)
-    testImplementation(managed.kotest.runner)
     testImplementation(managed.kotest.assertion)
     testImplementation(managed.ktor.test.server)
-    testImplementation(managed.mockk)
-    testImplementation(managed.tms.ktorTokenSupport.userToken.verificationMock)
+    testImplementation(managed.tms.ktorTokenSupport.entraId.verificationMock)
 }
 
 application {

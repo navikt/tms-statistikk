@@ -1,6 +1,5 @@
 package no.nav.tms.statistikk
 
-import no.nav.tms.kafka.application.Domain
 import no.nav.tms.kafka.application.KafkaApplication
 import no.nav.tms.statistikk.database.Flyway
 import no.nav.tms.statistikk.database.PostgresDatabase
