@@ -1,0 +1,43 @@
+version: 2
+
+registries:
+  nav-maven:
+    type: maven-repository
+    url: https://github-package-registry-mirror.gc.nav.no/cached/maven-release
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      github:
+        patterns:
+          - "*"
+    cooldown:
+      default-days: 3
+
+  - package-ecosystem: "gradle"
+    directory: "/"
+    registries:
+      - nav-maven
+    schedule:
+      interval: "weekly"
+    groups:
+      central-admin:
+        patterns:
+          - "no.nav.tms:*"
+      internal:
+        patterns:
+          - "io.ktor:*"
+        update-types:
+          - "minor"
+          - "patch"
+      gradle-major:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+    labels:
+      - gradle
+      - dependencies

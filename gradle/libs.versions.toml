@@ -1,0 +1,2 @@
+[libraries]
+ktor-server-html-builder = { group = "io.ktor", name = "ktor-server-html-builder", version = "3.6.1" }
