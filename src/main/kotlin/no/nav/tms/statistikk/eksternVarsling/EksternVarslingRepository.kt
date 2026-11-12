@@ -2,8 +2,6 @@ package no.nav.tms.statistikk.eksternVarsling
 
 import kotliquery.queryOf
 import no.nav.tms.statistikk.database.Database
-import java.time.LocalDateTime
-import java.time.ZonedDateTime
 
 
 class EksternVarslingRepository(val db: Database) {

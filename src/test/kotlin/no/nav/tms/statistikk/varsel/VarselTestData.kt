@@ -97,27 +97,4 @@ object VarselTestData {
         }
     """
 
-    fun eksternVarslingSendt(
-        varseltype: VarselType = beskjed,
-        varselId: String = UUID.randomUUID().toString(),
-        kanal: String = "SMS",
-        cluster: String = "cluster",
-        namespace: String = "namespace",
-        appnavn: String = "appnavn",
-        tidspunkt: ZonedDateTime = nowAtUtcZ()
-    ) = """
-       {
-            "@event_name": "eksternStatusOppdatert",
-            "status": "sendt",
-            "varselId": "$varselId",
-            "kanal": "$kanal",
-            "varseltype": "${varseltype.name}",
-            "produsent": {
-                "cluster": "$cluster",
-                "namespace": "$namespace",
-                "appnavn": "$appnavn"                        
-            },
-            "tidspunkt": "$tidspunkt"
-       }
-    """
 }

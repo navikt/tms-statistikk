@@ -14,13 +14,6 @@ fun JsonNode.asUtcDateTime(): LocalDateTime =
         .toUtcLocalDateTime()
 
 
-fun JsonNode.asOptionalUtcDateTime(): LocalDateTime? =
-    takeIf(JsonNode::isTextual)
-        ?.asText()
-        ?.takeIf(String::isNotEmpty)
-        ?.let { ZonedDateTime.parse(it) }
-        ?.toUtcLocalDateTime()
-
 fun defaultDeserializer() = jacksonMapperBuilder()
     .addModule(JavaTimeModule())
     .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)

@@ -1,10 +1,8 @@
 package no.nav.tms.statistikk
 
-import assert
 import cleanTables
 import io.kotest.matchers.shouldBe
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

@@ -8,7 +8,6 @@ import kotliquery.queryOf
 import no.nav.tms.kafka.application.MessageBroadcaster
 import no.nav.tms.statistikk.database.DateTimeHelper
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import java.time.LocalDateTime
@@ -23,11 +22,6 @@ class MicrofrontendSubscriberTest {
         listOf(MicrofrontendSubscriber(MicrofrontendRepository(database))),
         eventNameFields = listOf("@action")
     )
-
-    @BeforeAll
-    fun setup() {
-
-    }
 
     @AfterEach
     fun cleanup() {

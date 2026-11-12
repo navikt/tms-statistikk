@@ -1,7 +1,7 @@
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 
 plugins {
-    kotlin("jvm").version(Kotlin.version)
+    alias(managed.plugins.kotlin)
     alias(managed.plugins.tms.jarBundling)
     application
 }
@@ -26,38 +26,33 @@ repositories {
 }
 
 dependencies {
-    implementation(Flyway.core)
-    implementation(Flyway.postgres)
-    implementation(Hikari.cp)
-    implementation(JacksonDatatype.datatypeJsr310)
-    implementation(JacksonDatatype.moduleKotlin)
-    implementation(KotlinLogging.logging)
-    implementation(Ktor.Server.core)
-    implementation(Ktor.Server.netty)
-    implementation(Ktor.Server.contentNegotiation)
-    implementation(Ktor.Server.auth)
-    implementation(Ktor.Server.authJwt)
-    implementation(Ktor.Server.statusPages)
-    implementation(Ktor.Serialization.jackson)
-    implementation(KtorHtml.htmlBuilder)
-    implementation(Logstash.logbackEncoder)
-    implementation(TmsCommonLib.postgres)
-    implementation(TmsCommonLib.teamLogger)
-    implementation(TmsCommonLib.utils)
-    implementation(TmsKtorTokenSupport.entraIdTokenVerification)
-    implementation(Postgresql.postgresql)
-    implementation(KotliQuery.kotliquery)
-    implementation(TmsKafkaTools.kafkaApplication)
+    implementation(managed.bundles.flyway)
+    implementation(managed.hikariCp)
+    implementation(managed.jackson.datatypeJsr310)
+    implementation(managed.jackson.moduleKotlin)
+    implementation(managed.kotlinLogging)
+    implementation(managed.ktor.server.core)
+    implementation(managed.ktor.server.netty)
+    implementation(managed.ktor.server.contentNegotiation)
+    implementation(managed.ktor.server.auth)
+    implementation(managed.ktor.server.auth.jwt)
+    implementation(managed.ktor.server.statusPages)
+    implementation(managed.ktor.serialization.jackson)
+    implementation(managed.logback.encoder)
+    implementation(managed.postgresql)
+    implementation(managed.kotliQuery)
+    implementation(managed.tms.commonLib.teamLogger)
+    implementation(managed.tms.commonLib.utils)
+    implementation(managed.tms.kafka.application)
+    implementation(managed.tms.ktorTokenSupport.entraId.verification)
 
-    testImplementation(JunitPlatform.launcher)
-    testImplementation(JunitJupiter.api)
-    testImplementation(JunitJupiter.engine)
-    testImplementation(TestContainers.postgresql)
-    testImplementation(Kotest.runnerJunit5)
-    testImplementation(Kotest.assertionsCore)
-    testImplementation(Ktor.Test.serverTestHost)
-    testImplementation(TmsKtorTokenSupport.entraIdTokenVerificationMock)
-    testImplementation(Mockk.mockk)
+    testImplementation(managed.junit.launcher)
+    testImplementation(managed.junit.api)
+    testImplementation(managed.junit.engine)
+    testImplementation(managed.testContainers.postgresql)
+    testImplementation(managed.kotest.assertion)
+    testImplementation(managed.ktor.test.server)
+    testImplementation(managed.tms.ktorTokenSupport.entraId.verificationMock)
 }
 
 application {

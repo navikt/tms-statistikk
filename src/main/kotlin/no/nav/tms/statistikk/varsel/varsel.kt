@@ -46,14 +46,6 @@ enum class Sensitivitet(val loginLevel: Int) {
 
     @JsonValue
     fun toJson() = lowercaseName
-
-    companion object {
-        fun parse(string: String): Sensitivitet {
-            return Sensitivitet.values()
-                .filter { it.lowercaseName == string.lowercase() }
-                .firstOrNull() ?: throw IllegalArgumentException("Could not parse sensitivitet $string")
-        }
-    }
 }
 
 data class Produsent(
